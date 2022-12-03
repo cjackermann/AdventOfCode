@@ -1,6 +1,6 @@
 ﻿string[] input = File.ReadAllLines("input.txt");
 
-PartOne(input);
+//PartOne(input);
 PartTwo(input);
 
 static void PartOne(string[] input)
