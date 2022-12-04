@@ -1,21 +1,21 @@
 ﻿string[] input = File.ReadAllLines("input.txt");
 
-//PartOne(input);
-PartTwo(input);
+var pairs = from line in input
+            let blocks = line.Split(new char[] { ',', '-' })
+            let elve1 = Enumerable.Range(int.Parse(blocks[0]), int.Parse(blocks[1]) - int.Parse(blocks[0]) + 1)
+            let elve2 = Enumerable.Range(int.Parse(blocks[2]), int.Parse(blocks[3]) - int.Parse(blocks[2]) + 1)
+            select new Pair(elve1, elve2);
 
-static void PartOne(string[] input)
+//PartOne(pairs);
+PartTwo(pairs);
+
+static void PartOne(IEnumerable<Pair> pairs)
 {
-    var pairs = from line in input
-                let blocks = line.Split(new char[] { ',', '-' })
-                let elve1 = Enumerable.Range(int.Parse(blocks[0]), int.Parse(blocks[1]) - int.Parse(blocks[0]) + 1)
-                let elve2 = Enumerable.Range(int.Parse(blocks[2]), int.Parse(blocks[3]) - int.Parse(blocks[2]) + 1)
-                select new { elve1, elve2 };
-
     int overlapping = 0;
     foreach (var pair in pairs)
     {
-        var intersect = pair.elve1.Intersect(pair.elve2).ToList();
-        if (intersect.Count == pair.elve1.Count() || intersect.Count == pair.elve2.Count())
+        var intersect = pair.Elve1.Intersect(pair.Elve2).ToList();
+        if (intersect.Count == pair.Elve1.Count() || intersect.Count == pair.Elve2.Count())
         {
             overlapping++;
         }
@@ -24,18 +24,12 @@ static void PartOne(string[] input)
     Console.WriteLine(overlapping);
 }
 
-static void PartTwo(string[] input)
+static void PartTwo(IEnumerable<Pair> pairs)
 {
-    var pairs = from line in input
-                let blocks = line.Split(new char[] { ',', '-' })
-                let elve1 = Enumerable.Range(int.Parse(blocks[0]), int.Parse(blocks[1]) - int.Parse(blocks[0]) + 1)
-                let elve2 = Enumerable.Range(int.Parse(blocks[2]), int.Parse(blocks[3]) - int.Parse(blocks[2]) + 1)
-                select new { elve1, elve2 };
-
     int overlapping = 0;
     foreach (var pair in pairs)
     {
-        if (pair.elve1.Intersect(pair.elve2).Any())
+        if (pair.Elve1.Intersect(pair.Elve2).Any())
         {
             overlapping++;
         }
@@ -43,3 +37,5 @@ static void PartTwo(string[] input)
 
     Console.WriteLine(overlapping);
 }
+
+record Pair(IEnumerable<int> Elve1, IEnumerable<int> Elve2);
