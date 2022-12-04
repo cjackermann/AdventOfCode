@@ -5,18 +5,18 @@ VisualStudioVersion = 17.3.32929.385
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "2022", "2022", "{7DBD59EE-E903-4BF7-9FDE-4EADF65F8DBD}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Level 01", "2022\AoC_2022_01\Level 01.csproj", "{4A10D6D6-E46E-4602-88D3-37B3D3F390EE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Level 01", "2022\Level 01\Level 01.csproj", "{4A10D6D6-E46E-4602-88D3-37B3D3F390EE}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Level 02", "2022\AoC_2022_02\Level 02.csproj", "{63505746-7875-4F05-B1CA-A99F9A2E0FA8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Level 02", "2022\Level 02\Level 02.csproj", "{63505746-7875-4F05-B1CA-A99F9A2E0FA8}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Level 03", "2022\AoC_2022_03\Level 03.csproj", "{4B27DA2E-D438-43A8-8CAE-ADE66030CB98}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Level 03", "2022\Level 03\Level 03.csproj", "{4B27DA2E-D438-43A8-8CAE-ADE66030CB98}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{5DC6D5F1-9673-4939-A252-608CDF739C66}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Level 04", "2022\Level 04\Level 04.csproj", "{F51E7564-9570-4417-A570-2F5B7DBF0B6A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Level 04", "2022\Level 04\Level 04.csproj", "{F51E7564-9570-4417-A570-2F5B7DBF0B6A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

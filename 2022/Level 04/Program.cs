@@ -6,10 +6,10 @@ PartTwo(input);
 static void PartOne(string[] input)
 {
     var pairs = from line in input
-               let blocks = line.Split(new char[] { ',', '-' })
-               let elve1 = Enumerable.Range(int.Parse(blocks[0]), int.Parse(blocks[1]) - int.Parse(blocks[0]) + 1)
-               let elve2 = Enumerable.Range(int.Parse(blocks[2]), int.Parse(blocks[3]) - int.Parse(blocks[2]) + 1)
-               select new { elve1, elve2 };
+                let blocks = line.Split(new char[] { ',', '-' })
+                let elve1 = Enumerable.Range(int.Parse(blocks[0]), int.Parse(blocks[1]) - int.Parse(blocks[0]) + 1)
+                let elve2 = Enumerable.Range(int.Parse(blocks[2]), int.Parse(blocks[3]) - int.Parse(blocks[2]) + 1)
+                select new { elve1, elve2 };
 
     int overlapping = 0;
     foreach (var pair in pairs)
@@ -27,10 +27,10 @@ static void PartOne(string[] input)
 static void PartTwo(string[] input)
 {
     var pairs = from line in input
-                     let blocks = line.Split(new char[] { ',', '-' })
-                     let elve1 = Enumerable.Range(int.Parse(blocks[0]), int.Parse(blocks[1]) - int.Parse(blocks[0]) + 1)
-                     let elve2 = Enumerable.Range(int.Parse(blocks[2]), int.Parse(blocks[3]) - int.Parse(blocks[2]) + 1)
-                     select new { elve1, elve2 };
+                let blocks = line.Split(new char[] { ',', '-' })
+                let elve1 = Enumerable.Range(int.Parse(blocks[0]), int.Parse(blocks[1]) - int.Parse(blocks[0]) + 1)
+                let elve2 = Enumerable.Range(int.Parse(blocks[2]), int.Parse(blocks[3]) - int.Parse(blocks[2]) + 1)
+                select new { elve1, elve2 };
 
     int overlapping = 0;
     foreach (var pair in pairs)
