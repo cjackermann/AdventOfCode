@@ -81,7 +81,7 @@ public class Folder
     {
         yield return this;
 
-        foreach (var subFolder in SubFolders.SelectMany(c => c.GetFolders()))
+        foreach (var subFolder in SubFolders.SelectMany(d => d.GetFolders()))
         {
             yield return subFolder;
         }
