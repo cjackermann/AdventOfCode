@@ -14,8 +14,7 @@ static void PartOne(Folder folderStructure)
 static void PartTwo(Folder folderStructure)
 {
     var overallSize = folderStructure.GetSize;
-    var leftSpace = 70000000 - overallSize;
-    var neededSpace = 30000000 - leftSpace;
+    var neededSpace = 30000000 - (70000000 - overallSize);
 
     var folders = folderStructure.GetFolders();
     var folderToDelete = folders.OrderBy(d => d.GetSize).FirstOrDefault(d => d.GetSize >= neededSpace);
@@ -24,7 +23,7 @@ static void PartTwo(Folder folderStructure)
 
 static Folder GetFolderStructure(string[] input)
 {
-    var tree = new Folder("/", null, new List<Folder>(), new List<Text>());
+    var tree = new Folder("/", null);
     Folder currentFolder = tree;
     foreach (var line in input.Skip(1))
     {
@@ -48,7 +47,7 @@ static Folder GetFolderStructure(string[] input)
             var parts = line.Split(' ');
             if (parts[0] == "dir")
             {
-                currentFolder.SubFolders.Add(new Folder(parts[1], currentFolder, new List<Folder>(), new List<Text>()));
+                currentFolder.SubFolders.Add(new Folder(parts[1], currentFolder));
             }
             else
             {
@@ -62,21 +61,19 @@ static Folder GetFolderStructure(string[] input)
 
 public class Folder
 {
-    public Folder(string name, Folder parent, List<Folder> subFolders, List<Text> texts)
+    public Folder(string name, Folder parent)
     {
         Name = name;
         Parent = parent;
-        SubFolders = subFolders;
-        Texts = texts;
     }
 
     public string Name { get; }
 
     public Folder Parent { get; }
 
-    public List<Folder> SubFolders { get; }
+    public List<Folder> SubFolders { get; } = new List<Folder>();
 
-    public List<Text> Texts { get; }
+    public List<Text> Texts { get; } = new List<Text>();
 
     public int GetSize => Texts.Sum(d => d.Size) + SubFolders.Sum(d => d.GetSize);
 
@@ -84,9 +81,9 @@ public class Folder
     {
         yield return this;
 
-        foreach (var entry in SubFolders.SelectMany(c => c.GetFolders()))
+        foreach (var subFolder in SubFolders.SelectMany(c => c.GetFolders()))
         {
-            yield return entry;
+            yield return subFolder;
         }
     }
 }

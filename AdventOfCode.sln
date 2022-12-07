@@ -40,7 +40,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Level 08", "2015\Level 08\L
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Level 09", "2015\Level 09\Level 09.csproj", "{298ED2E8-7F55-4B28-BA72-B5AFD80D6980}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Level 07", "2022\Level 7\Level 07.csproj", "{6E840761-9AD0-4F8B-B67B-E0304B714D80}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Level 07", "2022\Level 07\Level 07.csproj", "{6E840761-9AD0-4F8B-B67B-E0304B714D80}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
