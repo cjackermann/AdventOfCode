@@ -4,7 +4,7 @@ var start = new Point(0, 0);
 HashSet<Point> list = new() { start };
 
 var currentH = start;
-List<Point> points = new List<Point>();
+List<Point> points = new();
 for (int i = 0; i < 9; i++)
 {
     points.Add(start);
@@ -38,34 +38,30 @@ foreach (string line in input)
 
         for (int x = 0; x < points.Count; x++)
         {
-            var tailX = points[x].X;
-            var tailY = points[x].Y;
+            var currentPoint = points[x];
+            var previousPoint = x == 0 ? currentH : points[x - 1];
 
-            var previousX = x == 0 ? previousH.X : points[x - 1].X;
-            var previousY = x == 0 ? previousH.Y : points[x - 1].Y;
-            if (Math.Abs(previousX - tailX) > 1 || Math.Abs(previousY - tailY) > 1)
+            if (Math.Abs(previousPoint.X - currentPoint.X) > 1 || Math.Abs(previousPoint.Y - currentPoint.Y) > 1)
             {
-                var newTailX = tailX;
-                if (tailX > previousX)
+                if (currentPoint.X > previousPoint.X)
                 {
-                    tailX--;
+                    currentPoint = currentPoint with { X = currentPoint.X -1 };
                 }
-                else if (tailX < previousX)
+                else if (currentPoint.X < previousPoint.X)
                 {
-                    tailX++;
-                }
-
-                var newTailY = tailY;
-                if (tailY > previousY)
-                {
-                    tailY--;
-                }
-                else if (tailY < previousY)
-                {
-                    tailY++;
+                    currentPoint = currentPoint with { X = currentPoint.X + 1 };
                 }
 
-                points[x] = new Point(tailX, tailY);
+                if (currentPoint.Y > previousPoint.Y)
+                {
+                    currentPoint = currentPoint with { Y = currentPoint.Y - 1 };
+                }
+                else if (currentPoint.Y < previousPoint.Y)
+                {
+                    currentPoint = currentPoint with { Y = currentPoint.Y + 1 };
+                }
+
+                points[x] = currentPoint;
             }
         }
 
@@ -73,6 +69,7 @@ foreach (string line in input)
     }
 }
 
-Console.WriteLine(list.Count + 1);
+Console.WriteLine(list.Count);
+Console.ReadKey();
 
 record Point(int X, int Y);
