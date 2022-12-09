@@ -1,13 +1,14 @@
 ﻿string[] input = File.ReadAllLines("input.txt");
 
-var start = new Point(0, 0);
-HashSet<Point> list = new() { start };
+HashSet<Point> visitedTailPoints = new() { new Point(0, 0) };
 
-var currentH = start;
-List<Point> points = new();
-for (int i = 0; i < 9; i++)
+var head = new Point(0, 0);
+//List<Point> tails = new(1);
+List<Point> tails = new(9);
+
+for (int i = 0; i < tails.Capacity; i++)
 {
-    points.Add(start);
+    tails.Add(head);
 }
 
 foreach (string line in input)
@@ -17,59 +18,56 @@ foreach (string line in input)
 
     for (int i = 0; i < amount; i++)
     {
-        var previousH = currentH;
-
         if (blocks[0] == "R")
         {
-            currentH = currentH with { X = currentH.X + 1 };
+            head = head with { X = head.X + 1 };
         }
         else if (blocks[0] == "L")
         {
-            currentH = currentH with { X = currentH.X - 1 };
+            head = head with { X = head.X - 1 };
         }
         else if (blocks[0] == "D")
         {
-            currentH = currentH with { Y = currentH.Y - 1 };
+            head = head with { Y = head.Y - 1 };
         }
         else if (blocks[0] == "U")
         {
-            currentH = currentH with { Y = currentH.Y + 1 };
+            head = head with { Y = head.Y + 1 };
         }
 
-        for (int x = 0; x < points.Count; x++)
+        for (int x = 0; x < tails.Count; x++)
         {
-            var currentPoint = points[x];
-            var previousPoint = x == 0 ? currentH : points[x - 1];
+            var currentTail = tails[x];
+            var previousTail = x == 0 ? head : tails[x - 1];
 
-            if (Math.Abs(previousPoint.X - currentPoint.X) > 1 || Math.Abs(previousPoint.Y - currentPoint.Y) > 1)
+            if (Math.Abs(previousTail.X - currentTail.X) > 1 || Math.Abs(previousTail.Y - currentTail.Y) > 1)
             {
-                if (currentPoint.X > previousPoint.X)
+                if (currentTail.X > previousTail.X)
                 {
-                    currentPoint = currentPoint with { X = currentPoint.X -1 };
+                    currentTail = currentTail with { X = currentTail.X - 1 };
                 }
-                else if (currentPoint.X < previousPoint.X)
+                else if (currentTail.X < previousTail.X)
                 {
-                    currentPoint = currentPoint with { X = currentPoint.X + 1 };
-                }
-
-                if (currentPoint.Y > previousPoint.Y)
-                {
-                    currentPoint = currentPoint with { Y = currentPoint.Y - 1 };
-                }
-                else if (currentPoint.Y < previousPoint.Y)
-                {
-                    currentPoint = currentPoint with { Y = currentPoint.Y + 1 };
+                    currentTail = currentTail with { X = currentTail.X + 1 };
                 }
 
-                points[x] = currentPoint;
+                if (currentTail.Y > previousTail.Y)
+                {
+                    currentTail = currentTail with { Y = currentTail.Y - 1 };
+                }
+                else if (currentTail.Y < previousTail.Y)
+                {
+                    currentTail = currentTail with { Y = currentTail.Y + 1 };
+                }
+
+                tails[x] = currentTail;
             }
         }
 
-        list.Add(points.Last());
+        visitedTailPoints.Add(tails.Last());
     }
 }
 
-Console.WriteLine(list.Count);
-Console.ReadKey();
+Console.WriteLine(visitedTailPoints.Count);
 
 record Point(int X, int Y);
