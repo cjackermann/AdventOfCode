@@ -21,14 +21,14 @@ while (true)
     var instruction = instructions.FirstOrDefault();
     if (instruction.Duration == 1)
     {
-        Printer.Print(x);
+        Printer.AddPoint(x);
 
         x += instruction.Count;
         instructions.Remove(instruction);
     }
     else
     {
-        Printer.Print(x);
+        Printer.AddPoint(x);
         instructions[0] = instruction with { Duration = instruction.Duration - 1 };
     }
 
@@ -42,22 +42,23 @@ while (true)
 
 Console.WriteLine(result);
 Console.WriteLine();
-Console.WriteLine(string.Join(Environment.NewLine, Printer.Rows));
+Console.WriteLine(Printer.PrintRows());
 
 static class Printer
 {
     private static readonly List<int> _points = new();
+    private static readonly List<string> _rows = new();
     private static string currentRow = string.Empty;
 
-    public static List<string> Rows = new();
+    public static string PrintRows() => string.Join(Environment.NewLine, _rows);
 
-    public static void Print(int newPoint)
+    public static void AddPoint(int newPoint)
     {
         _points.Add(newPoint);
 
         if (currentRow.Length == 39)
         {
-            Rows.Add(currentRow);
+            _rows.Add(currentRow);
             currentRow = string.Empty;
         }
         else
