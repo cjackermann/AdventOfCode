@@ -51,10 +51,9 @@ Console.WriteLine(string.Join(Environment.NewLine, Printer.Rows));
 static class Printer
 {
     private static readonly List<int> _points = new();
-    private static readonly List<string> _rows = new();
     private static string currentRow = string.Empty;
 
-    public static List<string> Rows => _rows;
+    public static List<string> Rows = new();
 
     public static void Print(int newPoint)
     {
@@ -62,12 +61,12 @@ static class Printer
 
         if (currentRow.Length == 39)
         {
-            _rows.Add(currentRow);
+            Rows.Add(currentRow);
             currentRow = string.Empty;
         }
         else
         {
-            var currentPosition = ((_points.Count - 1) % 40);
+            var currentPosition = (_points.Count - 1) % 40;
             var possiblePositions = new List<int> { currentPosition, currentPosition - 1, currentPosition + 1 };
 
             if (possiblePositions.Contains(newPoint))
