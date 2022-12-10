@@ -7,8 +7,12 @@ foreach (var container in _containers)
     combinations.AddRange(GetContainers(container.Index, 150));
 }
 
-var result = combinations.Select(d => d.Select(x => x.Index).OrderBy(x => x).ToList()).GroupBy(d => d).ToList();
-Console.WriteLine(result);
+var distinctCombinations = combinations.GroupBy(d => string.Join(" - ", d.Select(x => x.Index))).ToList();
+var minimumCombinationsCount = distinctCombinations.Select(d => d.Key.Split(" - ").Length).Min();
+var minimumCombinations = distinctCombinations.Select(d => d.Key.Split(" - ").Length).Where(d => d == minimumCombinationsCount).ToList();
+
+Console.WriteLine(distinctCombinations.Count);
+Console.WriteLine(minimumCombinations.Count);
 
 IEnumerable<List<Container>> GetContainers(int index, int remainingLiters)
 {
