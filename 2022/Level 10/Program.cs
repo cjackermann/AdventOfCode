@@ -23,16 +23,12 @@ while (true)
     {
         Printer.Print(x);
 
-        if (instruction.Operation != "noop")
-        {
-            Printer.Print(x);
-        }
-
         x += instruction.Count;
         instructions.Remove(instruction);
     }
     else
     {
+        Printer.Print(x);
         instructions[0] = instruction with { Duration = instruction.Duration - 1 };
     }
 
