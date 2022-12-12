@@ -13,11 +13,9 @@ var endPoint = board.FirstOrDefault(d => d.Value == 'E').Key;
 var results = new List<int>();
 foreach (var start in startPoints)
 {
-    var queue = new PriorityQueue<Point, int>();
-    var resultBoard = new Dictionary<Point, int>();
-
-    resultBoard[start] = 0;
-    queue.Enqueue((start), 0);
+    PriorityQueue<Point, int> queue = new();
+    Dictionary<Point, int> resultBoard = new() { [start] = 0 };
+    queue.Enqueue(start, 0);
 
     while (true)
     {
@@ -50,9 +48,7 @@ foreach (var start in startPoints)
     }
 }
 
-
 Console.WriteLine(results.Min());
-Console.ReadKey();
 
 IEnumerable<Point> GetNeighbours(Point currentPoint)
 {
