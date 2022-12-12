@@ -6,8 +6,8 @@ var board = new Dictionary<Point, char>(
                 select new KeyValuePair<Point, char>(new Point(x, y), input[y][x]));
 
 List<Point> startPoints = new();
-startPoints = board.Where(d => d.Value == 'S' || d.Value == 'a').Select(d => d.Key).ToList();
-//startPoints = board.Where(d => d.Value == 'S').Select(d => d.Key).ToList();
+//startPoints = board.Where(d => d.Value == 'S').Select(d => d.Key).ToList(); // Part One
+startPoints = board.Where(d => d.Value == 'S' || d.Value == 'a').Select(d => d.Key).ToList(); // PartTwo
 var endPoint = board.FirstOrDefault(d => d.Value == 'E').Key;
 
 var results = new List<int>();
