@@ -1,23 +1,29 @@
-﻿string[] input = File.ReadAllText("input.txt").Split("\r\n\r\n");
+﻿using System.Text.Json;
+using System.Text.Json.Nodes;
+
+string[] input = File.ReadAllText("input.txt").Split("\r\n\r\n");
 
 int result = 0;
 int counter = 0;
 foreach (var line in input)
 {
     counter++;
+    if (counter == 43)
+    {
+    }
     bool isRightOrder = true;
 
     var parts = line.Split("\r\n");
     var left = GetElements(parts[0]);
     var right = GetElements(parts[1]);
 
-    for (int i = 0; i < left.SubElements.Count; i++)
+    var checkResult = CheckSuccesfull(left, right);
+    if (checkResult == false)
     {
-        if (CheckSuccesfull(i, left, right) == false)
-        {
-            isRightOrder = false;
-            break;
-        }
+        isRightOrder = false;
+    }
+    else if (checkResult == null)
+    {
     }
 
     if (isRightOrder)
@@ -25,7 +31,7 @@ foreach (var line in input)
         result += counter;
     }
 
-    bool? CheckSuccesfull(int index, Element left, Element right)
+    bool? CheckSuccesfull(Element left, Element right)
     {
         if (left is Number leftNumber1 && right is Number rightNumber1)
         {
@@ -42,14 +48,19 @@ foreach (var line in input)
         }
         else if (left is Array leftArray1 && right is Array rightArray1)
         {
-            if (leftArray1.SubElements.Count > rightArray1.SubElements.Count)
+            if (!leftArray1.SubElements.Any() && rightArray1.SubElements.Any())
             {
-                return false;
+                return true;
             }
 
             for (int i = 0; i < leftArray1.SubElements.Count; i++)
             {
-                var checkResult = CheckSuccesfull(i, leftArray1.SubElements[i], rightArray1.SubElements[i]);
+                if (i >= rightArray1.SubElements.Count)
+                {
+                    return false;
+                }
+
+                var checkResult = CheckSuccesfull(leftArray1.SubElements[i], rightArray1.SubElements[i]);
                 if (checkResult == false)
                 {
                     return false;
@@ -59,32 +70,51 @@ foreach (var line in input)
                     return true;
                 }
             }
-        }
-        else if (left is Array leftArray2 && right is Number rightNumber2)
-        {
-            var subNumbers = leftArray2.GetSubNumbers();
-            if (!subNumbers.Any())
-            {
-                return false;
-            }
 
-            if (subNumbers.First().Value > rightNumber2.Value)
-            {
-                return false;
-            }
-        }
-        else if (left is Number leftNumber2 && right is Array rightArray2)
-        {
-            var subNumbers = rightArray2.GetSubNumbers();
-            if (!subNumbers.Any())
+            if (leftArray1.SubElements.Count < rightArray1.SubElements.Count)
             {
                 return true;
             }
 
-            if (rightArray2.GetSubNumbers().First().Value < leftNumber2.Value)
+            return null;
+        }
+        else if (left is Array leftArray2 && right is Number rightNumber2)
+        {
+            var subNumbers = leftArray2.GetSubNumbers().ToList();
+
+            for (int i = 0; i < subNumbers.Count; i++)
             {
-                return false;
+                var checkResult = CheckSuccesfull(subNumbers[i], rightNumber2);
+                if (checkResult == false)
+                {
+                    return false;
+                }
+                else if (checkResult == true)
+                {
+                    return true;
+                }
             }
+
+            return null;
+        }
+        else if (left is Number leftNumber2 && right is Array rightArray2)
+        {
+            var subNumbers = rightArray2.GetSubNumbers().ToList();
+
+            for (int i = 0; i < subNumbers.Count; i++)
+            {
+                var checkResult = CheckSuccesfull(leftNumber2, subNumbers[i]);
+                if (checkResult == false)
+                {
+                    return false;
+                }
+                else if (checkResult == true)
+                {
+                    return true;
+                }
+            }
+
+            return null;
         }
 
         return true;
@@ -96,8 +126,8 @@ Console.ReadKey();
 
 static Array GetElements(string input)
 {
-    Array root = new(null);
-    Array current = root;
+    Array root = null;
+    Array current = null;
 
     var tmpNumber = string.Empty;
     foreach (var charakter in input)
@@ -105,7 +135,15 @@ static Array GetElements(string input)
         if (charakter == '[')
         {
             Array newElement = new(current);
-            current.SubElements.Add(newElement);
+            if (current != null)
+            {
+                current.SubElements.Add(newElement);
+            }
+            else
+            {
+                root = newElement;
+            }
+
             current = newElement;
         }
         else if (charakter == ']')
@@ -160,16 +198,18 @@ public class Array : Element
 
     public IEnumerable<Number> GetSubNumbers()
     {
-        foreach (var number in SubElements.OfType<Number>())
+        foreach (var element in SubElements)
         {
-            yield return number;
-        }
-
-        foreach (var array in SubElements.OfType<Array>())
-        {
-            foreach (var number in array.GetSubNumbers())
+            if (element is Number num)
             {
-                yield return number;
+                yield return num;
+            }
+            else if (element is Array arr)
+            {
+                foreach (var number in arr.GetSubNumbers())
+                {
+                    yield return number;
+                }
             }
         }
     }
