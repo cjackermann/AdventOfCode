@@ -1,6 +1,7 @@
 ﻿using Level_13;
 
-PartOne();
+//PartOne();
+PartTwo();
 
 static void PartOne()
 {
@@ -31,6 +32,59 @@ static void PartOne()
     }
 
     Console.Write(result);
+}
+
+static void PartTwo()
+{
+    string[] input = File.ReadAllText("input.txt").Split("\r\n", StringSplitOptions.RemoveEmptyEntries);
+
+    List<Packet> lines = new();
+    for (int i = 0; i < input.Length; i++)
+    {
+        lines.Add(new Packet(GetElements(input[i]), i, false));
+    }
+
+    lines.Add(new Packet(GetElements("[[2]]"), lines.Count, true));
+    lines.Add(new Packet(GetElements("[[6]]"), lines.Count, true));
+
+    Packet[] sortedLines = lines.ToArray();
+    while (true)
+    {
+        bool isCorrectOrder = true;
+
+        sortedLines = sortedLines.OrderBy(d => d.Index).ToArray();
+        for (int i = 0; i < sortedLines.Length - 1; i++)
+        {
+            var leftContainer = sortedLines[i].Container;
+            var rightContainer = sortedLines[i + 1].Container;
+
+            var checkResult = CheckSuccesfull(leftContainer, rightContainer);
+            if (checkResult != true)
+            {
+                isCorrectOrder = false;
+                sortedLines[i] = sortedLines[i] with { Index = i + 1 };
+                sortedLines[i + 1] = sortedLines[i + 1] with { Index = i };
+                break;
+            }
+        }
+
+        if (isCorrectOrder)
+        {
+            sortedLines = sortedLines.OrderBy(d => d.Index).ToArray();
+            break;
+        }
+    }
+
+    foreach (var line in sortedLines)
+    {
+        Console.WriteLine(Print(line.Container));
+    }
+
+    Console.WriteLine();
+    Console.WriteLine(sortedLines.Where(d => d.Divider).First());
+    Console.WriteLine(sortedLines.Where(d => d.Divider).Last());
+    int result = sortedLines.Where(d => d.Divider).Select(d => d.Index + 1).Aggregate((x, y) => x * y);
+    Console.WriteLine(result);
 }
 
 static bool? CheckSuccesfull(Element left, Element right)
@@ -202,3 +256,5 @@ static Container GetElements(string input)
 
     return root;
 }
+
+public record Packet(Container Container, int Index, bool Divider);

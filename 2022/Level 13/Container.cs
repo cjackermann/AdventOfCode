@@ -19,9 +19,16 @@
                 }
                 else if (element is Container arr)
                 {
-                    foreach (var number in arr.GetSubNumbers())
+                    if (arr.SubElements.OfType<Number>().Any())
                     {
-                        yield return number;
+                        foreach (var number in arr.GetSubNumbers())
+                        {
+                            yield return number;
+                        }
+                    }
+                    else
+                    {
+                        yield return new Number(arr, -1);
                     }
                 }
             }
