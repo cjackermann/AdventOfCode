@@ -1,14 +1,16 @@
-﻿using System.Text.Json;
-using System.Text.Json.Nodes;
+﻿using Level_13;
+using System.Net.Sockets;
 
 string[] input = File.ReadAllText("input.txt").Split("\r\n\r\n");
+
+//var mikeResult = MikePartOne.GetResult();
 
 int result = 0;
 int counter = 0;
 foreach (var line in input)
 {
     counter++;
-    if (counter == 43)
+    if (counter == 15)
     {
     }
     bool isRightOrder = true;
@@ -22,14 +24,18 @@ foreach (var line in input)
     {
         isRightOrder = false;
     }
-    else if (checkResult == null)
-    {
-    }
 
     if (isRightOrder)
     {
         result += counter;
     }
+
+    Console.ForegroundColor = checkResult ?? false ? ConsoleColor.Green : ConsoleColor.Red;
+    Console.WriteLine(counter);
+
+    Console.ResetColor();
+    Console.WriteLine(Print(left));
+    Console.WriteLine(Print(right));
 
     bool? CheckSuccesfull(Element left, Element right)
     {
@@ -81,6 +87,10 @@ foreach (var line in input)
         else if (left is Array leftArray2 && right is Number rightNumber2)
         {
             var subNumbers = leftArray2.GetSubNumbers().ToList();
+            if (subNumbers.Count == 0)
+            {
+                return true;
+            }
 
             for (int i = 0; i < subNumbers.Count; i++)
             {
@@ -93,6 +103,10 @@ foreach (var line in input)
                 {
                     return true;
                 }
+                else if (subNumbers.Count > 1)
+                {
+                    return false;
+                }
             }
 
             return null;
@@ -100,6 +114,10 @@ foreach (var line in input)
         else if (left is Number leftNumber2 && right is Array rightArray2)
         {
             var subNumbers = rightArray2.GetSubNumbers().ToList();
+            if (subNumbers.Count == 0)
+            {
+                return false;
+            }
 
             for (int i = 0; i < subNumbers.Count; i++)
             {
@@ -109,6 +127,10 @@ foreach (var line in input)
                     return false;
                 }
                 else if (checkResult == true)
+                {
+                    return true;
+                }
+                else if (subNumbers.Count > 1)
                 {
                     return true;
                 }
@@ -122,7 +144,19 @@ foreach (var line in input)
 }
 
 Console.Write(result);
-Console.ReadKey();
+
+static string Print(Array array)
+{
+    List<string> result = new();
+
+    foreach (var item in array.SubElements)
+    {
+        if (item is Number v) result.Add(v.Value.ToString());
+        else if (item is Array l) result.Add(Print(l));
+    }
+
+    return "[" + string.Join(",", result) + "]";
+}
 
 static Array GetElements(string input)
 {
