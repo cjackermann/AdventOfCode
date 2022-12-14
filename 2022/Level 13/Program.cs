@@ -1,18 +1,10 @@
-﻿using Level_13;
-using System.Net.Sockets;
-
-string[] input = File.ReadAllText("input.txt").Split("\r\n\r\n");
-
-//var mikeResult = MikePartOne.GetResult();
+﻿string[] input = File.ReadAllText("input.txt").Split("\r\n\r\n");
 
 int result = 0;
 int counter = 0;
 foreach (var line in input)
 {
     counter++;
-    if (counter == 15)
-    {
-    }
     bool isRightOrder = true;
 
     var parts = line.Split("\r\n");
@@ -37,7 +29,7 @@ foreach (var line in input)
     Console.WriteLine(Print(left));
     Console.WriteLine(Print(right));
 
-    bool? CheckSuccesfull(Element left, Element right)
+    static bool? CheckSuccesfull(Element left, Element right)
     {
         if (left is Number leftNumber1 && right is Number rightNumber1)
         {
