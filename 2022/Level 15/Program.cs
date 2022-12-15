@@ -5,57 +5,52 @@ IEnumerable<(Point Sensor, Point Beacon)> data = from line in input
                                                  let sensor = new Point(int.Parse(parts[0]), int.Parse(parts[1]))
                                                  let beacon = new Point(int.Parse(parts[2]), int.Parse(parts[3]))
                                                  select (sensor, beacon);
+long maxCoordinates = 4000000;
+long? result = null;
 
-HashSet<Point> empty = new();
-HashSet<Point> sensors = new();
-HashSet<Point> beacons = new();
-foreach (var pair in data)
+for (int currentY = 0; currentY <= maxCoordinates; currentY++)
 {
-    sensors.Add(pair.Sensor);
-    beacons.Add(pair.Beacon);
+    long currentX = 0;
 
-    var xDiff = Math.Abs(pair.Sensor.X - pair.Beacon.X);
-    var yDiff = Math.Abs(pair.Sensor.Y - pair.Beacon.Y);
-    var together = xDiff + yDiff;
-
-    var leftPoint = new Point(pair.Sensor.X - together, pair.Sensor.Y);
-    var rightPoint = new Point(pair.Sensor.X + together, pair.Sensor.Y);
-    var downPoint = new Point(pair.Sensor.X, pair.Sensor.Y + together);
-    var upPoint = new Point(pair.Sensor.X, pair.Sensor.Y - together);
-
-    int step = 0;
-    for (int y = pair.Sensor.Y; y <= pair.Sensor.Y + together; y++)
+    var intersections = data.Select(d => GetIntersection(currentY, d)).Where(d => d != null).Select(d => d.Value).OrderBy(d => d.Start);
+    foreach (var (Start, End) in intersections)
     {
-        if (y == 2000000)
+        if (Start > currentX)
         {
-            for (int x = pair.Sensor.X - together + step; x <= pair.Sensor.X + together - step; x++)
-            {
-                empty.Add(new Point(x, y));
-            }
+            result = currentX * 4000000 + currentY;
+            break;
         }
-
-        step++;
+        else if (currentX <= End)
+        {
+            currentX = End + 1;
+        }
     }
 
-    step = 0;
-    for (int y = pair.Sensor.Y; y >= pair.Sensor.Y - together; y--)
+    if (result != null)
     {
-        if (y == 2000000)
-        {
-            for (int x = pair.Sensor.X - together + step; x <= pair.Sensor.X + together - step; x++)
-            {
-                empty.Add(new Point(x, y));
-            }
-        }
-
-        step++;
+        break;
     }
 }
 
-var result = empty.Union(sensors.Where(d => d.Y == 2000000)).ToList();
-result.RemoveAll(beacons.Contains);
-
-Console.WriteLine(result.Count);
+Console.WriteLine(result);
 Console.ReadKey();
+
+static (long Start, long End)? GetIntersection(long currentY, (Point Sensor, Point Beacon) pair)
+{
+    var xDiff = Math.Abs(pair.Sensor.X - pair.Beacon.X);
+    var yDiff = Math.Abs(pair.Sensor.Y - pair.Beacon.Y);
+    var distanceSensorToBeacon = xDiff + yDiff;
+
+    var distanceToY = Math.Abs(currentY - pair.Sensor.Y);
+    if (distanceToY > distanceSensorToBeacon)
+    {
+        return null;
+    }
+    else
+    {
+        var overlapLength = distanceSensorToBeacon - distanceToY;
+        return (pair.Sensor.X - overlapLength, pair.Sensor.X + overlapLength);
+    }
+}
 
 public record Point(int X, int Y);
