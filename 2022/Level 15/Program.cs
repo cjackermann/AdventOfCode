@@ -52,10 +52,10 @@ foreach (var pair in data)
     }
 }
 
-var all = empty.Union(sensors);
-var test = all.Where(d => d.Y == 2000000).ToHashSet();
+var result = empty.Union(sensors.Where(d => d.Y == 2000000)).ToList();
+result.RemoveAll(beacons.Contains);
 
-Console.WriteLine(test.Count - 1);
+Console.WriteLine(result.Count);
 Console.ReadKey();
 
 public record Point(int X, int Y);
