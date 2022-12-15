@@ -10,19 +10,19 @@ long? result = null;
 
 for (int currentY = 0; currentY <= maxCoordinates; currentY++)
 {
-    long currentX = 0;
+    var intersections = data.Select(d => GetIntersection(currentY, d)).Where(d => d != null).Select(d => d.Value).OrderBy(d => d.xStart);
 
-    var intersections = data.Select(d => GetIntersection(currentY, d)).Where(d => d != null).Select(d => d.Value).OrderBy(d => d.Start);
-    foreach (var (Start, End) in intersections)
+    long currentX = 0;
+    foreach (var (xStart, xEnd) in intersections)
     {
-        if (Start > currentX)
+        if (xStart > currentX)
         {
             result = currentX * 4000000 + currentY;
             break;
         }
-        else if (currentX <= End)
+        else if (currentX <= xEnd)
         {
-            currentX = End + 1;
+            currentX = xEnd + 1;
         }
     }
 
@@ -35,7 +35,7 @@ for (int currentY = 0; currentY <= maxCoordinates; currentY++)
 Console.WriteLine(result);
 Console.ReadKey();
 
-static (long Start, long End)? GetIntersection(long currentY, (Point Sensor, Point Beacon) pair)
+static (int xStart, int xEnd)? GetIntersection(int currentY, (Point Sensor, Point Beacon) pair)
 {
     var xDiff = Math.Abs(pair.Sensor.X - pair.Beacon.X);
     var yDiff = Math.Abs(pair.Sensor.Y - pair.Beacon.Y);
