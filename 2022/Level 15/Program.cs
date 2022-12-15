@@ -5,12 +5,12 @@ IEnumerable<(Point Sensor, Point Beacon)> data = from line in input
                                                  let sensor = new Point(int.Parse(parts[0]), int.Parse(parts[1]))
                                                  let beacon = new Point(int.Parse(parts[2]), int.Parse(parts[3]))
                                                  select (sensor, beacon);
-long maxXY = 4000000;
+int maxXY = 4000000;
 for (int currentY = 0; currentY <= maxXY; currentY++)
 {
     var intersections = data.Select(d => GetIntersection(currentY, d)).Where(d => d != null).Select(d => d.Value).OrderBy(d => d.xStart);
 
-    long currentX = 0;
+    int currentX = 0;
     long? result = null;
     foreach (var (xStart, xEnd) in intersections)
     {
