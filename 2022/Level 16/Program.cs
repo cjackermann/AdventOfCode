@@ -10,9 +10,9 @@ var valves = from line in input
 Dictionary<(string Valve, string Neighbour), int> dict = new();
 
 var closedNeedableValves = valves.Where(v => v.FlowRate > 0).ToHashSet();
-var result = GetPressure(closedNeedableValves, valves.First(d => d.Name == "AA"), 0, 0);
+var stage1Result = GetPressure(closedNeedableValves, valves.First(d => d.Name == "AA"), 0, 0);
 
-Console.WriteLine(result);
+Console.WriteLine(stage1Result);
 Console.ReadKey();
 
 int? GetPathCost(Valve currentValve, string currentNeighbour, HashSet<string> visitedValves)
@@ -35,13 +35,10 @@ int? GetPathCost(Valve currentValve, string currentNeighbour, HashSet<string> vi
         {
             if (!visitedValves.Contains(neighbour))
             {
-                var possibility = GetPathCost(valves.FirstOrDefault(d => d.Name == neighbour), currentNeighbour, visitedValves);
-                if (possibility != null)
+                var pathCost = GetPathCost(valves.FirstOrDefault(d => d.Name == neighbour), currentNeighbour, visitedValves);
+                if (pathCost != null && (score == null || pathCost.Value + 1 < score.Value))
                 {
-                    if (score == null || possibility.Value + 1 < score.Value)
-                    {
-                        score = possibility.Value + 1;
-                    }
+                    score = pathCost.Value + 1;
                 }
             }
         }
