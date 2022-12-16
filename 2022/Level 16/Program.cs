@@ -10,7 +10,7 @@ var valves = from line in input
 Dictionary<(string Valve, string Neighbour), int> dict = new();
 
 var unopenedValves = valves.Where(v => v.FlowRate > 0).ToHashSet();
-var result = GetPressure(unopenedValves, valves.First());
+var result = GetPressure(unopenedValves, valves.First(d => d.Name == "AA"), 0, 0);
 
 Console.WriteLine(result);
 Console.ReadKey();
@@ -27,28 +27,26 @@ int? GetPathCost(string valve, string neighbour, HashSet<string> visitedValves)
         return null;
     }
 
-    int? best = null;
-
     visitedValves.Add(valve);
 
-    var fromValve = valves.FirstOrDefault(d => d.Name == valve);
-
-    if (fromValve.Neighbours.Contains(neighbour))
+    var currentValve = valves.FirstOrDefault(d => d.Name == valve);
+    int? score = null;
+    if (currentValve.Neighbours.Contains(neighbour))
     {
-        best = 1;
+        score = 1;
     }
     else
     {
-        foreach (var neighbor in fromValve.Neighbours)
+        foreach (var neighbor in currentValve.Neighbours)
         {
             if (!visitedValves.Contains(neighbor))
             {
                 var possibility = GetPathCost(neighbor, neighbour, visitedValves);
                 if (possibility != null)
                 {
-                    if (best == null || possibility.Value + 1 < best.Value)
+                    if (score == null || possibility.Value + 1 < score.Value)
                     {
-                        best = possibility.Value + 1;
+                        score = possibility.Value + 1;
                     }
                 }
             }
@@ -57,16 +55,16 @@ int? GetPathCost(string valve, string neighbour, HashSet<string> visitedValves)
 
     visitedValves.Remove(valve);
 
-    if (best == null)
+    if (score == null)
     {
         return null;
     }
 
-    dict[(valve, neighbour)] = best.Value;
-    return best.Value;
+    dict[(valve, neighbour)] = score.Value;
+    return score.Value;
 }
 
-int GetPressure(HashSet<Valve> unopenedValves, Valve currentValve, int pressure = 0, int minute = 0)
+int GetPressure(HashSet<Valve> unopenedValves, Valve currentValve, int pressure, int minute)
 {
     if (minute == 30 || unopenedValves.Count == 0)
     {
@@ -85,13 +83,13 @@ int GetPressure(HashSet<Valve> unopenedValves, Valve currentValve, int pressure 
             unopenedValves.Remove(valve);
 
             var newMinute = minute + pathCost.Value + 1;
-            var possibility = GetPressure(unopenedValves, valve, pressure + (30 - newMinute) * valve.FlowRate, newMinute);
+            var possibleMaxPressure = GetPressure(unopenedValves, valve, pressure + (30 - newMinute) * valve.FlowRate, newMinute);
 
             unopenedValves.Add(valve);
 
-            if (possibility > highestPressure)
+            if (possibleMaxPressure > highestPressure)
             {
-                highestPressure = possibility;
+                highestPressure = possibleMaxPressure;
             }
         }
     }
