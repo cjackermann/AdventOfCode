@@ -8,9 +8,24 @@ foreach (var item in originalList)
 }
 
 ReorderList(originalList, editedList);
-long result = CalculateResult(originalList, editedList);
 
+long result = CalculateResult(originalList, editedList);
 Console.WriteLine("Stage 1: " + result);
+
+originalList.ForEach(d => d.Value *= 811589153);
+editedList.Clear();
+foreach (var item in originalList)
+{
+    editedList.AddLast(item);
+}
+
+for (int i = 0; i < 10; i++)
+{
+    ReorderList(originalList, editedList);
+}
+
+result = CalculateResult(originalList, editedList);
+Console.WriteLine("Stage 2: " + result);
 Console.ReadKey();
 
 static long CalculateResult(List<LinkedListNode<long>> originalList, LinkedList<long> editedList)
