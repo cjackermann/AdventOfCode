@@ -1,4 +1,6 @@
-﻿var actions = File.ReadAllText("input.txt").ToArray();
+﻿using Level_17;
+
+var actions = File.ReadAllText("input.txt").ToArray();
 string[] tmpRocks = File.ReadAllText("input2.txt").Split("\r\n\r\n");
 
 var rocks = new List<IEnumerable<Point>>();
@@ -20,16 +22,19 @@ foreach (var rock in tmpRocks)
     rocks.Add(tmpRock);
 }
 
-PartOne(actions, rocks);
+Console.WriteLine("Stage 1: " + CalculateMaxPoint(actions, rocks, 2022));
+Console.WriteLine("Stage 2: " + CalculateMaxPoint(actions, rocks, 1000000000000));
 
-static void PartOne(char[] actions, List<IEnumerable<Point>> rocks)
+static long CalculateMaxPoint(char[] actions, List<IEnumerable<Point>> rocks, long targetRockCount)
 {
     HashSet<Point> stones = new(Enumerable.Range(0, 7).Select(d => new Point(d, 0)));
+    var patterns = new Dictionary<Pattern, (long rockIndex, long top)>();
     long maxPoint = 0;
     int actionIndex = 0;
     long rockCount = 0;
+    long patternAdded = 0;
 
-    while (rockCount < 2022)
+    while (rockCount < targetRockCount)
     {
         int rockIndex = Convert.ToInt32(rockCount % 5);
         var rock = rocks[rockIndex].Select(d => d with { X = d.X + 2, Y = d.Y + maxPoint + 4 });
@@ -64,7 +69,24 @@ static void PartOne(char[] actions, List<IEnumerable<Point>> rocks)
                     stones.Add(point);
                 }
 
-                maxPoint = stones.Select(d => d.Y).Max();
+                maxPoint = stones.Max(d => d.Y);
+                if (maxPoint >= 15)
+                {
+                    var patternStones = stones.Where(d => maxPoint - d.Y < 15).Select(d => (d.X, maxPoint - d.Y)).ToHashSet();
+                    var pattern = new Pattern(actionIndex, patternStones);
+
+                    if (patterns.TryGetValue(pattern, out var result))
+                    {
+                        var distanceY = maxPoint - result.top;
+                        var numRocks = rockCount - result.rockIndex;
+                        var multiple = (targetRockCount - rockCount) / numRocks;
+                        patternAdded += distanceY * multiple;
+                        rockCount += numRocks * multiple;
+                    }
+
+                    patterns[pattern] = (rockCount, maxPoint);
+                }
+
                 break;
             }
         }
@@ -72,7 +94,7 @@ static void PartOne(char[] actions, List<IEnumerable<Point>> rocks)
         rockCount++;
     }
 
-    Console.WriteLine(maxPoint);
+    return maxPoint + patternAdded;
 }
 
 static IEnumerable<Point> ShiftDown(IEnumerable<Point> rock) => rock.Select(d => d with { Y = d.Y - 1 });
