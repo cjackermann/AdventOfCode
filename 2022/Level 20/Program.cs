@@ -8,8 +8,9 @@ foreach (var item in originalList)
 }
 
 ReorderList(originalList, editedList);
+long result = CalculateResult(originalList, editedList);
 
-Console.WriteLine(CalculateResult(originalList, editedList));
+Console.WriteLine("Stage 1: " + result);
 Console.ReadKey();
 
 static long CalculateResult(List<LinkedListNode<long>> originalList, LinkedList<long> editedList)
@@ -20,9 +21,10 @@ static long CalculateResult(List<LinkedListNode<long>> originalList, LinkedList<
     for (int i = 1; i <= 3; i++)
     {
         var moveCount = 1000 % editedList.Count;
-        while (moveCount-- > 0)
+        while (moveCount > 0)
         {
             targetZero = targetZero.Next ?? editedList.First;
+            moveCount--;
         }
 
         result += targetZero.Value;
@@ -42,9 +44,10 @@ static void ReorderList(List<LinkedListNode<long>> originalList, LinkedList<long
             var after = item.Next ?? editedList.First;
             editedList.Remove(item);
 
-            while (moveCount-- > 0)
+            while (moveCount > 0)
             {
                 after = after.Next ?? editedList.First;
+                moveCount--;
             }
 
             editedList.AddBefore(after, item);
@@ -54,9 +57,10 @@ static void ReorderList(List<LinkedListNode<long>> originalList, LinkedList<long
             var before = item.Previous ?? editedList.Last;
             editedList.Remove(item);
 
-            while (moveCount++ < 0)
+            while (moveCount < 0)
             {
                 before = before.Previous ?? editedList.Last;
+                moveCount++;
             }
 
             editedList.AddAfter(before, item);
