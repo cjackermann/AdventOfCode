@@ -30,6 +30,7 @@ static int Calculate(Blueprint blueprint, int minutes)
 {
     var previousRounds = new HashSet<Round>();
     var rounds = new HashSet<Round> { new Round(0, 1, 0, 0, 0, 0, 0, 0, minutes) };
+    int maxOreCost = new List<int> { blueprint.OreRobotCost, blueprint.ClayRobotCost, blueprint.ObsidianRobotCost.Ore, blueprint.GeodeRobotCost.Ore }.Max();
     int geodeCount = 0;
 
     while (true)
@@ -52,7 +53,6 @@ static int Calculate(Blueprint blueprint, int minutes)
             continue;
         }
 
-        int maxOreCost = new List<int> { blueprint.OreRobotCost, blueprint.ClayRobotCost, blueprint.ObsidianRobotCost.Ore, blueprint.GeodeRobotCost.Ore }.Max();
         round = round with
         {
             OreCount = Math.Min(round.OreCount, round.Time * maxOreCost - round.OreRobotsCount * (round.Time - 1)),
