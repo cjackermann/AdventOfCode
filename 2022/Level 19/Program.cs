@@ -1,6 +1,4 @@
-﻿using Level_19;
-
-string[] input = File.ReadAllLines("input.txt");
+﻿string[] input = File.ReadAllLines("input.txt");
 
 var blueprints = from line in input
                  let parts = line.Split(new string[] { "Blueprint ", ": Each ore robot costs ", " ore. Each clay robot costs ", " ore. Each obsidian robot costs ", " ore and ", " clay. Each geode robot costs ", " ore and ", " obsidian." }, StringSplitOptions.RemoveEmptyEntries)
@@ -12,68 +10,131 @@ var blueprints = from line in input
                  select new Blueprint(id, oreRobotCost, clayRobotCost, obsidianRobotCost, geodeRobotCost);
 
 int result = 0;
-foreach (var blueprint in blueprints.Take(1))
+foreach (var blueprint in blueprints)
 {
-    result += blueprint.Id * Calculate(blueprint);
+    result += blueprint.Id * Calculate(blueprint, 24);
 }
 
-Console.WriteLine(result);
+Console.WriteLine("Stage 1: " + result);
+
+result = 1;
+foreach (var blueprint in blueprints.Take(3))
+{
+    result *= Calculate(blueprint, 32);
+}
+
+Console.WriteLine("Stage 2: " + result);
 Console.ReadKey();
 
-static int Calculate(Blueprint blueprint)
+static int Calculate(Blueprint blueprint, int minutes)
 {
-    List<Robot> activeRobots = new() { new Robot(RobotType.Ore) };
-
     var previousRounds = new HashSet<Round>();
-    var rounds = new HashSet<Round> { new Round(0, 1, 0, 0, 0, 0, 0, 0, 24) };
+    var rounds = new HashSet<Round> { new Round(0, 1, 0, 0, 0, 0, 0, 0, minutes) };
     int geodeCount = 0;
 
-    for (int minute = 1; minute <= 24; minute++)
+    while (true)
     {
-        var newRobots = BuildNewRobots().ToList();
+        var round = rounds.LastOrDefault();
+        if (round == null)
+        {
+            break;
+        }
 
-        oreCount += activeRobots.Count(d => d.Type == RobotType.Ore);
-        clayCount += activeRobots.Count(d => d.Type == RobotType.Clay);
-        obsidianCount += activeRobots.Count(d => d.Type == RobotType.Obsidian);
-        geodeCount += activeRobots.Count(d => d.Type == RobotType.Geode);
+        rounds.Remove(round);
 
-        activeRobots.AddRange(newRobots);
+        if (round.Time == 0)
+        {
+            if (round.GeodeCount > geodeCount)
+            {
+                geodeCount = round.GeodeCount;
+            }
+
+            continue;
+        }
+
+        int maxOreCost = new List<int> { blueprint.OreRobotCost, blueprint.ClayRobotCost, blueprint.ObsidianRobotCost.Ore, blueprint.GeodeRobotCost.Ore }.Max();
+        round = round with
+        {
+            OreRobotsCount = Math.Min(round.OreRobotsCount, maxOreCost),
+            OreCount = Math.Min(round.OreCount, round.Time * maxOreCost - round.OreRobotsCount * (round.Time - 1)),
+            ClayRobotsCount = Math.Min(round.ClayRobotsCount, blueprint.ObsidianRobotCost.Clay),
+            ClayCount = Math.Min(round.ClayCount, round.Time * blueprint.ObsidianRobotCost.Clay - round.ClayRobotsCount * (round.Time - 1)),
+            ObsidianRobotsCount = Math.Min(round.ObsidianRobotsCount, blueprint.GeodeRobotCost.Obsidian),
+            ObsidianCount = Math.Min(round.ObsidianCount, round.Time * blueprint.GeodeRobotCost.Obsidian - round.ObsidianRobotsCount * (round.Time - 1)),
+        };
+
+        if (previousRounds.Contains(round))
+        {
+            continue;
+        }
+
+        previousRounds.Add(round);
+
+        if (round.OreCount >= blueprint.GeodeRobotCost.Ore && round.ObsidianCount >= blueprint.GeodeRobotCost.Obsidian)
+        {
+            rounds.Add(round with
+            {
+                OreCount = round.OreCount + round.OreRobotsCount - blueprint.GeodeRobotCost.Ore,
+                ClayCount = round.ClayCount + round.ClayRobotsCount,
+                ObsidianCount = round.ObsidianCount + round.ObsidianRobotsCount - blueprint.GeodeRobotCost.Obsidian,
+                GeodeCount = round.GeodeCount + round.GeodeRobotsCount,
+                GeodeRobotsCount = round.GeodeRobotsCount + 1,
+                Time = round.Time - 1,
+            });
+        }
+
+        if (round.OreCount >= blueprint.ObsidianRobotCost.Ore && round.ClayCount >= blueprint.ObsidianRobotCost.Clay)
+        {
+            rounds.Add(round with
+            {
+                OreCount = round.OreCount + round.OreRobotsCount - blueprint.ObsidianRobotCost.Ore,
+                ClayCount = round.ClayCount + round.ClayRobotsCount - blueprint.ObsidianRobotCost.Clay,
+                ObsidianCount = round.ObsidianCount + round.ObsidianRobotsCount,
+                ObsidianRobotsCount = round.ObsidianRobotsCount + 1,
+                GeodeCount = round.GeodeCount + round.GeodeRobotsCount,
+                Time = round.Time - 1,
+            });
+        }
+
+        if (round.OreCount >= blueprint.ClayRobotCost)
+        {
+            rounds.Add(round with
+            {
+                OreCount = round.OreCount + round.OreRobotsCount - blueprint.ClayRobotCost,
+                ClayCount = round.ClayCount + round.ClayRobotsCount,
+                ClayRobotsCount = round.ClayRobotsCount + 1,
+                ObsidianCount = round.ObsidianCount + round.ObsidianRobotsCount,
+                GeodeCount = round.GeodeCount + round.GeodeRobotsCount,
+                Time = round.Time - 1,
+            });
+        }
+
+        if (round.OreCount >= blueprint.OreRobotCost)
+        {
+            rounds.Add(round with
+            {
+                OreCount = round.OreCount + round.OreRobotsCount - blueprint.OreRobotCost,
+                OreRobotsCount = round.OreRobotsCount + 1,
+                ClayCount = round.ClayCount + round.ClayRobotsCount,
+                ObsidianCount = round.ObsidianCount + round.ObsidianRobotsCount,
+                GeodeCount = round.GeodeCount + round.GeodeRobotsCount,
+                Time = round.Time - 1,
+            });
+        }
+
+        rounds.Add(round with
+        {
+            OreCount = round.OreCount + round.OreRobotsCount,
+            ClayCount = round.ClayCount + round.ClayRobotsCount,
+            ObsidianCount = round.ObsidianCount + round.ObsidianRobotsCount,
+            GeodeCount = round.GeodeCount + round.GeodeRobotsCount,
+            Time = round.Time - 1,
+        });
     }
 
     return geodeCount;
-
-    IEnumerable<Robot> BuildNewRobots()
-    {
-        if (oreCount >= blueprint.GeodeRobotCost.Ore && obsidianCount >= blueprint.GeodeRobotCost.Obsidian)
-        {
-            yield return new Robot(RobotType.Geode);
-            oreCount -= blueprint.GeodeRobotCost.Ore;
-            obsidianCount -= blueprint.GeodeRobotCost.Obsidian;
-        }
-
-        if (oreCount >= blueprint.ObsidianRobotCost.Ore && clayCount >= blueprint.ObsidianRobotCost.Clay)
-        {
-            yield return new Robot(RobotType.Obsidian);
-            oreCount -= blueprint.ObsidianRobotCost.Ore;
-            clayCount -= blueprint.ObsidianRobotCost.Clay;
-        }
-
-        if (oreCount >= blueprint.ClayRobotCost)
-        {
-            yield return new Robot(RobotType.Clay);
-            oreCount -= blueprint.ClayRobotCost;
-        }
-    }
 }
 
 public record Blueprint(int Id, int OreRobotCost, int ClayRobotCost, (int Ore, int Clay) ObsidianRobotCost, (int Ore, int Obsidian) GeodeRobotCost);
 
-public record Robot(RobotType Type);
-
-public enum RobotType
-{
-    Ore,
-    Clay,
-    Obsidian,
-    Geode,
-}
+public record Round(int OreCount, int OreRobotsCount, int ClayCount, int ClayRobotsCount, int ObsidianCount, int ObsidianRobotsCount, int GeodeCount, int GeodeRobotsCount, int Time);
