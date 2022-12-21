@@ -1,33 +1,151 @@
 ﻿string[] input = File.ReadAllLines("input.txt");
 
-var statements = (from line in input
-                  let sides = line.Split(": ")
-                  let key = sides[0]
-                  let action = sides[1]
-                  select new Statement(key, action)).ToList();
+var statements = from line in input
+                 let sides = line.Split(": ")
+                 let key = sides[0]
+                 let action = sides[1]
+                 select new Statement(key, action);
 
-var resultDict = new Dictionary<string, long>();
-int count = 0;
+PartOne(statements.ToList());
+PartTwo(statements.ToList());
 
-while (true)
+static void PartOne(List<Statement> statements)
 {
-    if (resultDict.ContainsKey("root"))
+    var resultDict = new Dictionary<string, long>();
+    int count = 0;
+
+    while (true)
     {
-        break;
+        if (resultDict.ContainsKey("root"))
+        {
+            break;
+        }
+
+        if (DoCalculation(resultDict, statements[count]))
+        {
+            statements.Remove(statements[count]);
+            count = 0;
+        }
+        else
+        {
+            count++;
+        }
     }
 
-    if (DoCalculation(resultDict, statements[count]))
-    {
-        statements.Remove(statements[count]);
-        count = 0;
-    }
-    else
-    {
-        count++;
-    }
+    Console.WriteLine("Stage 1: " + resultDict["root"]);
 }
 
-Console.WriteLine(resultDict["root"]);
+static void PartTwo(List<Statement> statements)
+{
+    var resultDict = new Dictionary<string, long>();
+    int count = 0;
+    HashSet<string> needsMe = new() { "humn" };
+
+    while (true)
+    {
+        if (resultDict.ContainsKey("root") || count == statements.Count)
+        {
+            break;
+        }
+
+        if (statements[count].Key == "humn")
+        {
+            count++;
+            continue;
+        }
+        else if (!char.IsNumber(statements[count].Action[0]))
+        {
+            var sides = statements[count].Action.Split(" ");
+            string leftSide = sides[0];
+            string rightSide = sides[2];
+
+            if (needsMe.Contains(leftSide) || needsMe.Contains(rightSide))
+            {
+                needsMe.Add(statements[count].Key);
+                count++;
+                continue;
+            }
+        }
+
+        if (DoCalculation(resultDict, statements[count]))
+        {
+            statements.Remove(statements[count]);
+            count = 0;
+        }
+        else
+        {
+            count++;
+        }
+    }
+
+    var rootStatement = statements.FirstOrDefault(d => d.Key == "root");
+    var rootActions = rootStatement.Action.Split(" ");
+    string leftRootAction = rootActions[0];
+    string rightRootAction = rootActions[2];
+    long rootValue = resultDict.FirstOrDefault(d => leftRootAction == d.Key || rightRootAction == d.Key).Value;
+    resultDict.Add(leftRootAction, rootValue);
+    needsMe.RemoveWhere(d => d == "root" || d == "humn");
+
+    long currentCalculationValue = rootValue;
+    foreach (var statementKey in needsMe.Reverse())
+    {
+        var currentStatement = statements.FirstOrDefault(d => d.Key == statementKey);
+        var parts = currentStatement.Action.Split(" ");
+        string left = parts[0];
+        string action = parts[1];
+        string right = parts[2];
+
+        if (resultDict.ContainsKey(left))
+        {
+            long res = 0;
+            if (action == "+")
+            {
+                res = currentCalculationValue - resultDict[left];
+            }
+            else if (action == "-")
+            {
+                res = resultDict[left] - currentCalculationValue;
+            }
+            else if (action == "*")
+            {
+                res = currentCalculationValue / resultDict[left];
+            }
+            else if (action == "/")
+            {
+                res = resultDict[left] / currentCalculationValue;
+            }
+
+            currentCalculationValue = res;
+            resultDict.Add(right, res);
+        }
+        else if (resultDict.ContainsKey(right))
+        {
+            long res = 0;
+            if (action == "+")
+            {
+                res = currentCalculationValue - resultDict[right];
+            }
+            else if (action == "-")
+            {
+                res = currentCalculationValue + resultDict[right];
+            }
+            else if (action == "*")
+            {
+                res = currentCalculationValue / resultDict[right];
+            }
+            else if (action == "/")
+            {
+                res = currentCalculationValue * resultDict[right];
+            }
+
+            currentCalculationValue = res;
+            resultDict.Add(left, res);
+        }
+    }
+
+    Console.WriteLine("Stage 2: " + currentCalculationValue);
+}
+
 Console.ReadKey();
 
 static bool DoCalculation(Dictionary<string, long> resultDict, Statement statement)
