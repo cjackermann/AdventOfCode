@@ -57,9 +57,7 @@ static int Calculate(Blueprint blueprint, int minutes)
         {
             OreCount = Math.Min(round.OreCount, round.Time * maxOreCost - round.OreRobotsCount * (round.Time - 1)),
             ClayCount = Math.Min(round.ClayCount, round.Time * blueprint.ObsidianRobotCost.Clay - round.ClayRobotsCount * (round.Time - 1)),
-            ClayRobotsCount = Math.Min(round.ClayRobotsCount, blueprint.ObsidianRobotCost.Clay),
             ObsidianCount = Math.Min(round.ObsidianCount, round.Time * blueprint.GeodeRobotCost.Obsidian - round.ObsidianRobotsCount * (round.Time - 1)),
-            ObsidianRobotsCount = Math.Min(round.ObsidianRobotsCount, blueprint.GeodeRobotCost.Obsidian),
         };
 
         if (previousRounds.Contains(round))
