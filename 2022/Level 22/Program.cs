@@ -33,6 +33,8 @@ foreach (var charakter in tmpActions)
     }
 }
 
+actions.Add(tmpStr);
+
 Point currentPoint = points.First();
 Direction direction = Direction.Right;
 
