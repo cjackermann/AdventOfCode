@@ -82,7 +82,7 @@ int PartTwo(HashSet<Point> elfes)
 
 void CheckNextMove(Direction direction, HashSet<Point> elfes, Point elfe, Dictionary<Point, Point> possibleNextPositions)
 {
-    var neighbours = GetNeighbours(elfe, elfes);
+    var neighbours = GetNeighbours(elfe, elfes).ToList();
     if (!neighbours.Any())
     {
         return;
@@ -122,22 +122,22 @@ void CheckNextMove(Direction direction, HashSet<Point> elfes, Point elfe, Dictio
 
 static IEnumerable<Direction> GetNeighbours(Point elve, HashSet<Point> elfes)
 {
-    if (elfes.Any(d => d.X == elve.X && d.Y == elve.Y - 1) || elfes.Any(d => d.X == elve.X + 1 && d.Y == elve.Y - 1) || elfes.Any(d => d.X == elve.X - 1 && d.Y == elve.Y - 1))
+    if (elfes.Contains(new Point(elve.X, elve.Y - 1)) || elfes.Contains(new Point(elve.X + 1, elve.Y - 1)) || elfes.Contains(new Point(elve.X - 1, elve.Y - 1)))
     {
         yield return Direction.North;
     }
 
-    if (elfes.Any(d => d.X == elve.X && d.Y == elve.Y + 1) || elfes.Any(d => d.X == elve.X + 1 && d.Y == elve.Y + 1) || elfes.Any(d => d.X == elve.X - 1 && d.Y == elve.Y + 1))
+    if (elfes.Contains(new Point(elve.X, elve.Y + 1)) || elfes.Contains(new Point(elve.X + 1, elve.Y + 1)) || elfes.Contains(new Point(elve.X - 1, elve.Y + 1)))
     {
         yield return Direction.South;
     }
 
-    if (elfes.Any(d => d.X == elve.X - 1 && d.Y == elve.Y) || elfes.Any(d => d.X == elve.X - 1 && d.Y == elve.Y + 1) || elfes.Any(d => d.X == elve.X - 1 && d.Y == elve.Y - 1))
+    if (elfes.Contains(new Point(elve.X - 1, elve.Y)) || elfes.Contains(new Point(elve.X - 1, elve.Y + 1)) || elfes.Contains(new Point(elve.X - 1, elve.Y - 1)))
     {
         yield return Direction.West;
     }
 
-    if (elfes.Any(d => d.X == elve.X + 1 && d.Y == elve.Y) || elfes.Any(d => d.X == elve.X + 1 && d.Y == elve.Y + 1) || elfes.Any(d => d.X == elve.X + 1 && d.Y == elve.Y - 1))
+    if (elfes.Contains(new Point(elve.X + 1, elve.Y)) || elfes.Contains(new Point(elve.X + 1, elve.Y + 1)) || elfes.Contains(new Point(elve.X + 1, elve.Y - 1)))
     {
         yield return Direction.East;
     }
