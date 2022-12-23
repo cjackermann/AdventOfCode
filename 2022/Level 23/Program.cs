@@ -1,6 +1,6 @@
 ﻿string[] input = File.ReadAllLines("input.txt");
 
-HashSet<Point> elfes = new();
+List<Point> elfes = new();
 for (int y = 0; y < input.Length; y++)
 {
     for (int x = 0; x < input[0].Length; x++)
@@ -12,14 +12,16 @@ for (int y = 0; y < input.Length; y++)
     }
 }
 
-var result = PartOne(elfes);
-
+var result = PartOne(elfes.ToHashSet());
 int xMin = result.Min(d => d.X);
 int xMax = result.Max(d => d.X) + 1;
 int yMin = result.Min(d => d.Y);
 int yMax = result.Max(d => d.Y) + 1;
-
 Console.WriteLine("Stage 1: " + ((xMax - xMin) * (yMax - yMin) - result.Count));
+
+int maxRound = PartTwo(elfes.ToHashSet());
+Console.WriteLine("Stage 2: " + maxRound);
+
 Console.ReadKey();
 
 HashSet<Point> PartOne(HashSet<Point> elfes)
@@ -44,6 +46,38 @@ HashSet<Point> PartOne(HashSet<Point> elfes)
     }
 
     return elfes;
+}
+
+int PartTwo(HashSet<Point> elfes)
+{
+    Direction direction = Direction.North;
+    int result = 0;
+
+    while (true)
+    {
+        result++;
+        var possibleNextPositions = new Dictionary<Point, Point>();
+        foreach (var elfe in elfes)
+        {
+            CheckNextMove(direction, elfes, elfe, possibleNextPositions);
+        }
+
+        var singlePoints = possibleNextPositions.GroupBy(d => d.Value).Where(d => d.Count() == 1).ToDictionary(d => d.First().Key, d => d.Key);
+        if (singlePoints.Count == 0)
+        {
+            break;
+        }
+
+        foreach (var proposal in singlePoints)
+        {
+            elfes.Remove(proposal.Key);
+            elfes.Add(proposal.Value);
+        }
+
+        direction = direction == Direction.East ? Direction.North : direction + 1;
+    }
+
+    return result;
 }
 
 void CheckNextMove(Direction direction, HashSet<Point> elfes, Point elfe, Dictionary<Point, Point> possibleNextPositions)
