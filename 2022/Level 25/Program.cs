@@ -39,13 +39,13 @@ static long ConvertToDecimal(string[] input, Dictionary<char, long> dict)
 static string ConvertToSnafu(long result, Dictionary<char, long> dict)
 {
     var reverseDict = dict.ToDictionary(kvp => kvp.Value, kvp => kvp.Key);
-    var resultList = new List<char>();
 
+    string snafu = string.Empty;
     while (result > 0)
     {
-        resultList.Insert(0, reverseDict[((result + 2) % 5) - 2]);
+        snafu = reverseDict[((result + 2) % 5) - 2] + snafu;
         result = (result + 2) / 5;
     }
 
-    return resultList.Select(d => d.ToString()).Aggregate((a, b) => a + b);
+    return snafu;
 }
