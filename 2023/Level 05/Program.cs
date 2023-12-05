@@ -1,8 +1,5 @@
-﻿
-string input = File.ReadAllText("input.txt");
+﻿string input = File.ReadAllText("input.txt");
 var groups = input.Split("\r\n\r\n");
-
-var seeds = groups[0].Split(new string[] { "seeds:", " " }, StringSplitOptions.RemoveEmptyEntries).Select(long.Parse).ToList();
 
 var maps = new List<Map>();
 foreach (var group in groups.Skip(1))
@@ -18,12 +15,15 @@ foreach (var group in groups.Skip(1))
     maps.Add(newMap);
 }
 
-PartOne(seeds, maps);
+PartOne(maps);
+PartTwo(maps);
 
 Console.ReadKey();
 
-void PartOne(List<long> seeds, List<Map> maps)
+void PartOne(List<Map> maps)
 {
+    var seeds = groups[0].Split(new string[] { "seeds:", " " }, StringSplitOptions.RemoveEmptyEntries).Select(long.Parse).ToList();
+
     long counter = long.MaxValue;
     foreach (var seed in seeds)
     {
@@ -42,13 +42,48 @@ void PartOne(List<long> seeds, List<Map> maps)
     Console.WriteLine("Part 1: " + counter);
 }
 
+void PartTwo(List<Map> maps)
+{
+    var seeds = new List<(long Start, long End)>();
+    var splittedSeeds = groups[0].Split(new string[] { "seeds:", " " }, StringSplitOptions.RemoveEmptyEntries).Select(long.Parse).ToList();
+    for (int i = 0; i < splittedSeeds.Count; i += 2)
+    {
+        long start = splittedSeeds[i];
+        long count = splittedSeeds[i + 1];
+
+        seeds.Add((start, start + count));
+    }
+
+    maps.Reverse();
+
+    for (long i = 1; i < long.MaxValue; i++)
+    {
+        long internalCounter = i;
+        foreach (var map in maps)
+        {
+            internalCounter = map.GetNearestReverse(internalCounter);
+        }
+
+        if (seeds.Any(x => x.Start <= internalCounter && x.End >= internalCounter))
+        {
+            Console.WriteLine("Part 2: " + i);
+            break;
+        }
+    }
+}
+
 class Map
 {
     public List<Helper> Ranges = new List<Helper>();
 
     public long GetNearest(long number)
     {
-        return Ranges.Min(x => x.CheckSeed(number)) ?? number;
+        return Ranges.Min(x => x.Check(number)) ?? number;
+    }
+
+    public long GetNearestReverse(long number)
+    {
+        return Ranges.Min(x => x.CheckReverse(number)) ?? number;
     }
 }
 
@@ -62,7 +97,7 @@ class Helper
         SourceEnd = long.Parse(items[1].ToString()) + long.Parse(items[2].ToString());
 
         DestinationStart = long.Parse(items[0].ToString());
-        DestinationEnd = long.Parse(items[1].ToString()) + long.Parse(items[2].ToString());
+        DestinationEnd = long.Parse(items[0].ToString()) + long.Parse(items[2].ToString());
     }
 
     public long SourceStart { get; }
@@ -73,12 +108,23 @@ class Helper
 
     public long DestinationEnd { get; }
 
-    public long? CheckSeed(long seed)
+    public long? Check(long number)
     {
-        if (seed >= SourceStart && seed <= SourceEnd)
+        if (number >= SourceStart && number <= SourceEnd)
         {
-            var tmp = seed - SourceStart;
+            var tmp = number - SourceStart;
             return DestinationStart + tmp;
+        }
+
+        return null;
+    }
+
+    public long? CheckReverse(long number)
+    {
+        if (number >= DestinationStart && number <= DestinationEnd)
+        {
+            var tmp = number - DestinationStart;
+            return SourceStart + tmp;
         }
 
         return null;
