@@ -56,7 +56,7 @@ void PartTwo(List<Map> maps)
 
     maps.Reverse();
 
-    for (long i = 1; i < long.MaxValue; i++)
+    for (long i = 130000000; i < long.MaxValue; i++)
     {
         long internalCounter = i;
         foreach (var map in maps)
@@ -64,7 +64,7 @@ void PartTwo(List<Map> maps)
             internalCounter = map.GetNearestReverse(internalCounter);
         }
 
-        if (seeds.Any(x => x.Start <= internalCounter && x.End >= internalCounter))
+        if (seeds.Any(x => x.Start <= internalCounter && x.End > internalCounter))
         {
             Console.WriteLine("Part 2: " + i);
             break;
@@ -110,7 +110,7 @@ class Helper
 
     public long? Check(long number)
     {
-        if (number >= SourceStart && number <= SourceEnd)
+        if (number >= SourceStart && number < SourceEnd)
         {
             var tmp = number - SourceStart;
             return DestinationStart + tmp;
@@ -121,7 +121,7 @@ class Helper
 
     public long? CheckReverse(long number)
     {
-        if (number >= DestinationStart && number <= DestinationEnd)
+        if (number >= DestinationStart && number < DestinationEnd)
         {
             var tmp = number - DestinationStart;
             return SourceStart + tmp;
