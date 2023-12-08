@@ -48,6 +48,7 @@ void PartOne(Dictionary<string, (string Left, string Right)> map, char[] walks)
 
     Console.WriteLine("Part 1: " + counter);
 }
+
 void PartTwo(Dictionary<string, (string Left, string Right)> map, char[] walks)
 {
     var steps = map.Where(x => x.Key.EndsWith("A")).ToList();
