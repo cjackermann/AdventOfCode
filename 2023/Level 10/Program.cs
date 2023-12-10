@@ -10,7 +10,6 @@ PriorityQueue<Point, int> queue = new();
 Dictionary<Point, int> resultBoard = new() { [start] = 0 };
 queue.Enqueue(start, 0);
 
-Point previousPoint = null;
 while (true)
 {
     Point currentPoint = null;
@@ -23,7 +22,7 @@ while (true)
         break;
     }
 
-    var neighbours = GetNeighbours(currentPoint).Where(x => x != previousPoint).ToList();
+    var neighbours = GetNeighbours(currentPoint).ToList();
     foreach (var neighbour in neighbours)
     {
         var steps = resultBoard[currentPoint] + 1;
