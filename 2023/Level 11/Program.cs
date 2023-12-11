@@ -1,16 +1,18 @@
 ﻿List<string> input = File.ReadAllLines("input.txt").ToList();
 
 var tmpInput = input.ToList();
+int addOffset = 0;
 for (int i = 0; i < tmpInput.Count; i++)
 {
     if (!tmpInput[i].Any(x => x == '#'))
     {
-        input.Insert(i + 1, tmpInput[i]);
+        input.Insert(i + 1 + addOffset, tmpInput[i]);
+        addOffset++;
     }
 }
 
 tmpInput = input.ToList();
-int addOffset = 0;
+addOffset = 0;
 for (int i = 0; i < tmpInput[0].Length; i++)
 {
     if (!tmpInput.Select(x => x[i]).Any(x => x == '#'))
@@ -33,7 +35,7 @@ var board = new Dictionary<Point, char>(
 
 var galaxies = board.Where(x => x.Value == '#').Select(x => x.Key).ToList();
 
-int counter = 0;
+long counter = 0;
 for (int g1 = 0; g1 < galaxies.Count - 1;  g1++)
 {
     for (int g2 = g1 + 1; g2 < galaxies.Count; g2++)
@@ -48,4 +50,4 @@ for (int g1 = 0; g1 < galaxies.Count - 1;  g1++)
 Console.WriteLine("Part 1: " + counter);
 Console.ReadKey();
 
-record Point(int X, int Y);
+record Point(long X, long Y);
