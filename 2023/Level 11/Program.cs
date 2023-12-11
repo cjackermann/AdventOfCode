@@ -31,16 +31,12 @@ for (int g1 = 0; g1 < galaxies.Count - 1; g1++)
 {
     for (int g2 = g1 + 1; g2 < galaxies.Count; g2++)
     {
-        var distanceX1 = Math.Abs(galaxies[g1].X - galaxies[g2].X);
-        var distanceY1 = Math.Abs(galaxies[g1].Y - galaxies[g2].Y);
-        distanceX1 += xOffsets.Count(x => x >= Math.Min(galaxies[g1].X, galaxies[g2].X) && x <= Math.Max(galaxies[g1].X, galaxies[g2].X));
-        distanceY1 += yOffsets.Count(x => x >= Math.Min(galaxies[g1].Y, galaxies[g2].Y) && x <= Math.Max(galaxies[g1].Y, galaxies[g2].Y));
+        var distanceX1 = Math.Abs(galaxies[g1].X - galaxies[g2].X) + xOffsets.Count(x => x >= Math.Min(galaxies[g1].X, galaxies[g2].X) && x <= Math.Max(galaxies[g1].X, galaxies[g2].X));
+        var distanceY1 = Math.Abs(galaxies[g1].Y - galaxies[g2].Y) + yOffsets.Count(x => x >= Math.Min(galaxies[g1].Y, galaxies[g2].Y) && x <= Math.Max(galaxies[g1].Y, galaxies[g2].Y));
         counter1 += distanceX1 + distanceY1;
 
-        var distanceX2 = Math.Abs(galaxies[g1].X - galaxies[g2].X);
-        var distanceY2 = Math.Abs(galaxies[g1].Y - galaxies[g2].Y);
-        distanceX2 += xOffsets.Count(x => x >= Math.Min(galaxies[g1].X, galaxies[g2].X) && x <= Math.Max(galaxies[g1].X, galaxies[g2].X)) * 999999;
-        distanceY2 += yOffsets.Count(x => x >= Math.Min(galaxies[g1].Y, galaxies[g2].Y) && x <= Math.Max(galaxies[g1].Y, galaxies[g2].Y)) * 999999;
+        var distanceX2 = Math.Abs(galaxies[g1].X - galaxies[g2].X) + (xOffsets.Count(x => x >= Math.Min(galaxies[g1].X, galaxies[g2].X) && x <= Math.Max(galaxies[g1].X, galaxies[g2].X)) * 999999);
+        var distanceY2 = Math.Abs(galaxies[g1].Y - galaxies[g2].Y) + (yOffsets.Count(x => x >= Math.Min(galaxies[g1].Y, galaxies[g2].Y) && x <= Math.Max(galaxies[g1].Y, galaxies[g2].Y)) * 999999);
         counter2 += distanceX2 + distanceY2;
     }
 }
