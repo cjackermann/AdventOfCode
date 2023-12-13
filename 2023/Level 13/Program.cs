@@ -3,7 +3,8 @@
 var input = File.ReadAllText("input.txt");
 var patterns = input.Split("\r\n\r\n").Select(x => x.Split("\r\n").ToList()).ToList();
 
-long totalSum = 0;
+long counter1 = 0;
+long counter2 = 0;
 foreach (var pattern in patterns)
 {
     var board = new Dictionary<Point, char>(
@@ -14,10 +15,61 @@ foreach (var pattern in patterns)
     var resVertical = CheckVertical(board);
     var resHorizontal = CheckHorizontal(board);
 
-    totalSum += (resVertical ?? 0) + (resHorizontal ?? 0) * 100;
+    counter1 += (resVertical ?? 0) + (resHorizontal ?? 0) * 100;
+
+    bool found = false;
+    for (int y = 0; y <= board.Max(s => s.Key.Y); y++)
+    {
+        for (int x = 0; x <= board.Max(s => s.Key.X); x++)
+        {
+            if (board[new Point(x, y)] == '.')
+            {
+                board[new Point(x, y)] = '#';
+            }
+            else
+            {
+                board[new Point(x, y)] = '.';
+            }
+
+            var tmpResVertical = CheckVertical(board);
+            var tmpResHorizontal = CheckHorizontal(board);
+
+            if (tmpResVertical != resVertical && tmpResVertical != null)
+            {
+                resVertical = tmpResVertical;
+                resHorizontal = null;
+                found = true;
+                break;
+            }
+            else if (tmpResHorizontal != resHorizontal && tmpResHorizontal != null)
+            {
+                resVertical = null;
+                resHorizontal = tmpResHorizontal;
+                found = true;
+                break;
+            }
+
+            if (board[new Point(x, y)] == '.')
+            {
+                board[new Point(x, y)] = '#';
+            }
+            else
+            {
+                board[new Point(x, y)] = '.';
+            }
+        }
+
+        if (found)
+        {
+            break;
+        }
+    }
+
+    counter2 += (resVertical ?? 0) + (resHorizontal ?? 0) * 100;
 }
 
-Console.WriteLine("Part 1: " + totalSum);
+Console.WriteLine("Part 1: " + counter1);
+Console.WriteLine("Part 2: " + counter2);
 Console.ReadKey();
 
 static long? CheckVertical(Dictionary<Point, char> board)
