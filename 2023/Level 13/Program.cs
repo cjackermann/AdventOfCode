@@ -31,17 +31,17 @@ foreach (var pattern in patterns)
                 board[new Point(x, y)] = '.';
             }
 
-            var tmpResVertical = CheckVertical(board);
-            var tmpResHorizontal = CheckHorizontal(board);
+            var tmpResVertical = CheckVertical(board, resVertical);
+            var tmpResHorizontal = CheckHorizontal(board, resHorizontal);
 
-            if (tmpResVertical != resVertical && tmpResVertical != null)
+            if (tmpResVertical != null)
             {
                 resVertical = tmpResVertical;
                 resHorizontal = null;
                 found = true;
                 break;
             }
-            else if (tmpResHorizontal != resHorizontal && tmpResHorizontal != null)
+            else if (tmpResHorizontal != null)
             {
                 resVertical = null;
                 resHorizontal = tmpResHorizontal;
@@ -72,7 +72,7 @@ Console.WriteLine("Part 1: " + counter1);
 Console.WriteLine("Part 2: " + counter2);
 Console.ReadKey();
 
-static long? CheckVertical(Dictionary<Point, char> board)
+static long? CheckVertical(Dictionary<Point, char> board, long? except = null)
 {
     var grp = board.GroupBy(x => x.Key.X).ToList();
     var possibleResults = new List<int>();
@@ -82,7 +82,7 @@ static long? CheckVertical(Dictionary<Point, char> board)
         var t1 = grp[i].OrderBy(x => x.Key.Y).Select(x => x.Value).ToList();
         var t2 = grp[i + 1].OrderBy(x => x.Key.Y).Select(x => x.Value).ToList();
 
-        if (t1.SequenceEqual(t2))
+        if (t1.SequenceEqual(t2) && i + 1 != except)
         {
             possibleResults.Add(i);
         }
@@ -114,7 +114,7 @@ static long? CheckVertical(Dictionary<Point, char> board)
     return null;
 }
 
-static long? CheckHorizontal(Dictionary<Point, char> board)
+static long? CheckHorizontal(Dictionary<Point, char> board, long? except = null)
 {
     var grp = board.GroupBy(x => x.Key.Y).ToList();
     var possibleResults = new List<int>();
@@ -124,7 +124,7 @@ static long? CheckHorizontal(Dictionary<Point, char> board)
         var t1 = grp[i].OrderBy(x => x.Key.X).Select(x => x.Value).ToList();
         var t2 = grp[i + 1].OrderBy(x => x.Key.X).Select(x => x.Value).ToList();
 
-        if (t1.SequenceEqual(t2))
+        if (t1.SequenceEqual(t2) && i + 1 != except)
         {
             possibleResults.Add(i);
         }
