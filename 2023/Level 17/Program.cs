@@ -11,26 +11,77 @@ var maxX = board.Max(s => s.Key.X);
 var maxY = board.Max(s => s.Key.Y);
 var end = new MapPoint(maxX, maxY);
 
-var map = new Dictionary<MapPoint, long>() { { new MapPoint(0, 0), 0 } };
+Part1();
+Part2();
 
-var queue = new PriorityQueue<(MapPoint Point, Direction Direction, int Steps), long>();
-queue.Enqueue((new MapPoint(0, 0), Direction.East, 0), 0);
+Console.ReadKey();
 
-while (queue.Count != 0)
+void Part1()
 {
-    var current = queue.Dequeue();
+    var visited = new List<(MapPoint Point, Direction Direction, int Steps)>();
+    var map = new Dictionary<(MapPoint Point, Direction Direction, int Steps), long>() { { (new MapPoint(0, 0), Direction.South, 1), 0 }, { (new MapPoint(0, 0), Direction.East, 1), 0 } };
 
-    var neighbours = current.Point.GetNeighbours(current.Direction, current.Steps).Where(s => s.Point.X >= 0 && s.Point.X <= maxX && s.Point.Y >= 0 && s.Point.Y <= maxY).ToList();
-    foreach (var neighbour in neighbours)
+    var queue = new PriorityQueue<(MapPoint Point, Direction Direction, int Steps), long>();
+    queue.Enqueue((new MapPoint(0, 0), Direction.East, 1), 0);
+    queue.Enqueue((new MapPoint(0, 0), Direction.South, 1), 0);
+
+    long? result = null;
+    while (result == null)
     {
-        long heatLoss = map[current.Point] + board[neighbour.Point];
-        if (heatLoss < map.GetValueOrDefault(neighbour.Point, long.MaxValue))
+        var current = queue.Dequeue();
+        visited.Add(current);
+
+        if (current.Point == end)
         {
-            map[neighbour.Point] = heatLoss;
-            queue.Enqueue(neighbour, heatLoss);
+            result = map[current];
+        }
+
+        var neighbours = current.Point.GetPart1Neighbours(current.Direction, current.Steps).Where(s => s.Point.X >= 0 && s.Point.X <= maxX && s.Point.Y >= 0 && s.Point.Y <= maxY).ToList();
+        foreach (var neighbour in neighbours)
+        {
+            long heatLoss = map[current] + board[neighbour.Point];
+            if (heatLoss < map.GetValueOrDefault(neighbour, long.MaxValue))
+            {
+                map[neighbour] = heatLoss;
+                queue.Enqueue(neighbour, heatLoss);
+            }
         }
     }
+
+    Console.WriteLine("Part 2: " + result);
 }
 
-Console.WriteLine("Part 1: " + map[end]);
-Console.ReadKey();
+void Part2()
+{
+    var visited = new List<(MapPoint Point, Direction Direction, int Steps)>();
+    var map = new Dictionary<(MapPoint Point, Direction Direction, int Steps), long>() { { (new MapPoint(0, 0), Direction.South, 1), 0 }, { (new MapPoint(0, 0), Direction.East, 1), 0 } };
+
+    var queue = new PriorityQueue<(MapPoint Point, Direction Direction, int Steps), long>();
+    queue.Enqueue((new MapPoint(0, 0), Direction.East, 1), 0);
+    queue.Enqueue((new MapPoint(0, 0), Direction.South, 1), 0);
+
+    long? result = null;
+    while (result == null)
+    {
+        var current = queue.Dequeue();
+        visited.Add(current);
+
+        if (current.Point == end && current.Steps >= 4)
+        {
+            result = map[current];
+        }
+
+        var neighbours = current.Point.GetPart2Neighbours(current.Direction, current.Steps).Where(s => s.Point.X >= 0 && s.Point.X <= maxX && s.Point.Y >= 0 && s.Point.Y <= maxY).ToList();
+        foreach (var neighbour in neighbours)
+        {
+            long heatLoss = map[current] + board[neighbour.Point];
+            if (heatLoss < map.GetValueOrDefault(neighbour, long.MaxValue))
+            {
+                map[neighbour] = heatLoss;
+                queue.Enqueue(neighbour, heatLoss);
+            }
+        }
+    }
+
+    Console.WriteLine("Part 2: " + result);
+}

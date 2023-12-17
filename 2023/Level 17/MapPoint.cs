@@ -2,26 +2,56 @@
 {
     public record MapPoint(int X, int Y)
     {
-        public IEnumerable<(MapPoint Point, Direction Direction, int Steps)> GetNeighbours(Direction direction, int steps)
+        public IEnumerable<(MapPoint Point, Direction Direction, int Steps)> GetPart1Neighbours(Direction direction, int steps)
         {
-            if (direction != Direction.South && (direction != Direction.North || direction == Direction.North && steps < 3))
+            if (steps < 3)
             {
-                yield return (North, Direction.North, direction == Direction.North ? steps + 1 : 0);
+                switch (direction)
+                {
+                    case Direction.West: yield return (West, Direction.West, steps + 1); break;
+                    case Direction.South: yield return (South, Direction.South, steps + 1); break;
+                    case Direction.East: yield return (East, Direction.East, steps + 1); break;
+                    case Direction.North: yield return (North, Direction.North, steps + 1); break;
+                }
             }
 
-            if (direction != Direction.West && (direction != Direction.East || direction == Direction.East && steps < 3))
+            if (direction == Direction.West || direction == Direction.East)
             {
-                yield return (East, Direction.East, direction == Direction.East ? steps + 1 : 0);
+                yield return (North, Direction.North, 1);
+                yield return (South, Direction.South, 1);
+            }
+            else if (direction == Direction.North || direction == Direction.South)
+            {
+                yield return (West, Direction.West, 1);
+                yield return (East, Direction.East, 1);
+            }
+        }
+
+        public IEnumerable<(MapPoint Point, Direction Direction, int Steps)> GetPart2Neighbours(Direction direction, int steps)
+        {
+            if (steps < 10)
+            {
+                switch (direction)
+                {
+                    case Direction.West: yield return (West, Direction.West, steps + 1); break;
+                    case Direction.South: yield return (South, Direction.South, steps + 1); break;
+                    case Direction.East: yield return (East, Direction.East, steps + 1); break;
+                    case Direction.North: yield return (North, Direction.North, steps + 1); break;
+                }
             }
 
-            if (direction != Direction.North && (direction != Direction.South || direction == Direction.South && steps < 3))
+            if (steps >= 4)
             {
-                yield return (South, Direction.South, direction == Direction.South ? steps + 1 : 0);
-            }
-
-            if (direction != Direction.East && (direction != Direction.West || direction == Direction.West && steps < 3))
-            {
-                yield return (West, Direction.West, direction == Direction.West ? steps + 1 : 0);
+                if (direction == Direction.West || direction == Direction.East)
+                {
+                    yield return (North, Direction.North, 1);
+                    yield return (South, Direction.South, 1);
+                }
+                else if (direction == Direction.North || direction == Direction.South)
+                {
+                    yield return (West, Direction.West, 1);
+                    yield return (East, Direction.East, 1);
+                }
             }
         }
 
