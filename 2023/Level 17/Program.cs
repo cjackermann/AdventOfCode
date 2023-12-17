@@ -48,7 +48,7 @@ void Part1()
         }
     }
 
-    Console.WriteLine("Part 2: " + result);
+    Console.WriteLine("Part 1: " + result);
 }
 
 void Part2()
