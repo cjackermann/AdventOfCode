@@ -18,7 +18,6 @@ Console.ReadKey();
 
 void Part1()
 {
-    var visited = new List<(MapPoint Point, Direction Direction, int Steps)>();
     var map = new Dictionary<(MapPoint Point, Direction Direction, int Steps), long>() { { (new MapPoint(0, 0), Direction.South, 1), 0 }, { (new MapPoint(0, 0), Direction.East, 1), 0 } };
 
     var queue = new PriorityQueue<(MapPoint Point, Direction Direction, int Steps), long>();
@@ -29,7 +28,6 @@ void Part1()
     while (result == null)
     {
         var current = queue.Dequeue();
-        visited.Add(current);
 
         if (current.Point == end)
         {
@@ -53,7 +51,6 @@ void Part1()
 
 void Part2()
 {
-    var visited = new List<(MapPoint Point, Direction Direction, int Steps)>();
     var map = new Dictionary<(MapPoint Point, Direction Direction, int Steps), long>() { { (new MapPoint(0, 0), Direction.South, 1), 0 }, { (new MapPoint(0, 0), Direction.East, 1), 0 } };
 
     var queue = new PriorityQueue<(MapPoint Point, Direction Direction, int Steps), long>();
@@ -64,7 +61,6 @@ void Part2()
     while (result == null)
     {
         var current = queue.Dequeue();
-        visited.Add(current);
 
         if (current.Point == end && current.Steps >= 4)
         {
