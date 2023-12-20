@@ -35,10 +35,12 @@ foreach (var conModule in modules.Where(x => x.Value is ConjunctionModule))
     }
 }
 
+var rxDeliverants = modules.Values.Where(x => x.NextModules.Contains("hj")).ToDictionary(x => x.Name, x => (long)0); // -> hj works with my input @TBeer ;)
 (long High, long Low) pulseCounter = (0, 0);
-for (int i = 0; i < 1000; i++)
+
+for (long i = 1; i < long.MaxValue; i++)
 {
-    List<PulseRequest> queue = [new PulseRequest(null, Pulse.Low, "broadcaster")];
+    List<PulseRequest> queue = [new PulseRequest(string.Empty, Pulse.Low, "broadcaster")];
 
     while (queue.Count != 0)
     {
@@ -60,29 +62,6 @@ for (int i = 0; i < 1000; i++)
         {
             pulseCounter.Low++;
         }
-    }
-}
-
-var result = pulseCounter.High * pulseCounter.Low;
-Console.WriteLine("Part 1: " + result);
-
-modules.Values.ToList().ForEach(x => x.Reset());
-
-var rxDeliverants = modules.Values.Where(x => x.NextModules.Contains("hj")).ToDictionary(x => x.Name, x => (long)0); // -> hj works with my input @TBeer ;)
-for (long i = 1; i < long.MaxValue; i++)
-{
-    List<PulseRequest> queue = [new PulseRequest(string.Empty, Pulse.Low, "broadcaster")];
-
-    while (queue.Count != 0)
-    {
-        var currentRequest = queue.First();
-        queue.Remove(queue.First());
-
-        if (modules.TryGetValue(currentRequest.NextModule, out var currentModule))
-        {
-            var (high, low, nextPulses) = currentModule.SendPulse(currentRequest.Sender, currentRequest.Pulse, modules);
-            queue.AddRange(nextPulses);
-        }
 
         if (rxDeliverants.TryGetValue(currentRequest.Sender, out var value) && value == 0 && currentRequest.Pulse == Pulse.High)
         {
@@ -90,14 +69,21 @@ for (long i = 1; i < long.MaxValue; i++)
         }
     }
 
+    if (i == 1000)
+    {
+        var result = pulseCounter.High * pulseCounter.Low;
+        Console.WriteLine("Part 1: " + result);
+    }
+
     if (rxDeliverants.Values.All(x => x != 0))
     {
+        long result = rxDeliverants.Values.Aggregate(GetLCM);
+        Console.WriteLine("Part 2: " + result);
+
         break;
     }
 }
 
-long result2 = rxDeliverants.Values.Aggregate(GetLCM);
-Console.WriteLine("Part 2: " + result2);
 Console.ReadKey();
 
 static long GetLCM(long a, long b)
