@@ -36,7 +36,7 @@ foreach (var conModule in modules.Where(x => x.Value is ConjunctionModule))
 }
 
 (long High, long Low) pulseCounter = (0, 0);
-for (int i = 0; i < 2; i++)
+for (int i = 0; i < 1000; i++)
 {
     List<PulseRequest> queue = [new PulseRequest(null, Pulse.Low, "broadcaster")];
 
@@ -68,7 +68,7 @@ Console.WriteLine("Part 1: " + result);
 
 modules.Values.ToList().ForEach(x => x.Reset());
 
-var rxNames = new Dictionary<string, long> { { "ks", 0}, { "jf", 0}, { "qs", 0 }, { "zk", 0 } };
+var rxDeliverants = modules.Values.Where(x => x.NextModules.Contains("hj")).ToDictionary(x => x.Name, x => (long)0); // -> hj works with my input @TBeer ;)
 for (long i = 1; i < long.MaxValue; i++)
 {
     List<PulseRequest> queue = [new PulseRequest(string.Empty, Pulse.Low, "broadcaster")];
@@ -84,19 +84,19 @@ for (long i = 1; i < long.MaxValue; i++)
             queue.AddRange(nextPulses);
         }
 
-        if (rxNames.TryGetValue(currentRequest.Sender, out var value) && value == 0 && currentRequest.Pulse == Pulse.High)
+        if (rxDeliverants.TryGetValue(currentRequest.Sender, out var value) && value == 0 && currentRequest.Pulse == Pulse.High)
         {
-            rxNames[currentRequest.Sender] = i;
+            rxDeliverants[currentRequest.Sender] = i;
         }
     }
 
-    if (rxNames.Values.All(x => x != 0))
+    if (rxDeliverants.Values.All(x => x != 0))
     {
         break;
     }
 }
 
-long result2 = rxNames.Values.Aggregate(GetLCM);
+long result2 = rxDeliverants.Values.Aggregate(GetLCM);
 Console.WriteLine("Part 2: " + result2);
 Console.ReadKey();
 
