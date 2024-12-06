@@ -29,9 +29,9 @@ Console.WriteLine("Part1: " + resultPositions.Select(x => x.Point).Distinct().Co
 int maxX = board.Max(x => x.Key.X);
 int maxY = board.Max(x => x.Key.Y);
 long result = 0;
-for (int y = 0; y < maxY; y++)
+for (int y = 0; y <= maxY; y++)
 {
-    for (int x = 0; x < maxX; x++)
+    for (int x = 0; x <= maxX; x++)
     {
         var additionalPoint = new Point(x, y);
         resultPositions.Clear();
