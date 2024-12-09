@@ -64,21 +64,13 @@ static void Part2(string input)
 
         if (count != 0)
         {
-            if (empty)
+            var newPart = new Part(empty, count, []);
+            for (int j = 0; j < count; j++)
             {
-                data.Add(new Part(true, new string('.', count)));
+                newPart.Values.Add(empty ? -1 : idx);
             }
-            else
-            {
-                var newPart = new Part(false, string.Empty);
 
-                for (int j = 0; j < count; j++)
-                {
-                    newPart = newPart with { Data = newPart.Data + idx.ToString() };
-                }
-
-                data.Add(newPart);
-            }
+            data.Add(newPart);
         }
 
         idx = !empty ? idx + 1 : idx;
@@ -95,7 +87,7 @@ static void Part2(string input)
 
         var currenItemIdx = data.IndexOf(currentItem);
 
-        var firstEmpty = data.FirstOrDefault(x => x.IsFree && x.Data.Length >= currentItem.Data.Length);
+        var firstEmpty = data.FirstOrDefault(x => x.IsFree && x.Space >= currentItem.Space);
         if (firstEmpty == null || data.IndexOf(firstEmpty) > i)
         {
             continue;
@@ -104,26 +96,42 @@ static void Part2(string input)
         var firstEmptyIdx = data.IndexOf(firstEmpty);
         data.RemoveAt(firstEmptyIdx);
         data.Insert(firstEmptyIdx, currentItem);
-        data[currenItemIdx] = data[currenItemIdx] with { IsFree = true, Data = new string('.', currentItem.Data.Length)};
+        data.RemoveAt(currenItemIdx);
 
-        var toAddLength = firstEmpty.Data.Length - currentItem.Data.Length;
+        var backFiller = new Part(true, currentItem.Space, []);
+        for (int j = 0; j < currentItem.Space; j++)
+        {
+            backFiller.Values.Add(-1);
+        }
+        data.Insert(currenItemIdx, backFiller);
+
+        var toAddLength = firstEmpty.Space - currentItem.Space;
         if (toAddLength > 0)
         {
-            data.Insert(firstEmptyIdx + 1, new Part(true, new string('.', toAddLength)));
+            var filler = new Part(true, toAddLength, []);
+            for (int j = 0; j < toAddLength; j++)
+            {
+                filler.Values.Add(-1);
+            }
+
+            data.Insert(firstEmptyIdx + 1, filler);
+
+            i++;
         }
     }
 
     long result = 0;
-    string resultString = string.Join(string.Empty, data.SelectMany(x => x.Data).Select(x => x.ToString()));
-    for (int i = 0; i < resultString.Length; i++)
+    var values = data.SelectMany(x => x.Values).ToList();
+    for (int i = 0; i < values.Count; i++)
     {
-        if (resultString[i] != '.')
+        var value = values[i];
+        if (value != -1)
         {
-            result += int.Parse(resultString[i].ToString()) * i;
+            result += value * i;
         }
     }
 
     Console.WriteLine("Part 2: " + result);
 }
 
-record Part(bool IsFree, string Data);
+record Part(bool IsFree, int Space, List<long> Values);
