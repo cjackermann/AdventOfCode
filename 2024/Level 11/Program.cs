@@ -2,74 +2,36 @@
 
 Dictionary<long, long> stones = input.Split(" ").ToDictionary(long.Parse, x => 1L);
 
-for (int i = 0; i < 75; i++)
+for (int i = 1; i <= 75; i++)
 {
     Dictionary<long, long> newStones = stones.ToDictionary(x => x.Key, x => x.Value);
     foreach (var stone in stones)
     {
-        if (stone.Key == 0)
-        {
-            if (newStones.TryGetValue(1, out long count))
-            {
-                newStones[1] = count + stone.Value;
-            }
-            else
-            {
-                newStones.Add(1, stone.Value);
-            }
-        }
-        else if (stone.Key.ToString().Length % 2 == 0)
-        {
-            var firstStone = long.Parse(stone.Key.ToString().Substring(0, stone.Key.ToString().Length / 2));
-            var secondStone = long.Parse(stone.Key.ToString().Substring(stone.Key.ToString().Length / 2));
+        long firstStone = 1;
+        long? secondStone = null;
 
-            if (newStones.TryGetValue(firstStone, out long count1))
-            {
-                newStones[firstStone] = count1 + stone.Value;
-            }
-            else
-            {
-                newStones.Add(firstStone, stone.Value);
-            }
-
-            if (newStones.TryGetValue(secondStone, out long count2))
-            {
-                newStones[secondStone] = count2 + stone.Value;
-            }
-            else
-            {
-                newStones.Add(secondStone, stone.Value);
-            }
-        }
-        else
+        if (stone.Key.ToString().Length % 2 == 0)
         {
-            var newKey = stone.Key * 2024;
-            if (newStones.TryGetValue(newKey, out var count))
-            {
-                newStones[newKey] = count + stone.Value;
-            }
-            else
-            {
-                newStones.Add(newKey, stone.Value);
-            }
+            firstStone = long.Parse(stone.Key.ToString().Substring(0, stone.Key.ToString().Length / 2));
+            secondStone = long.Parse(stone.Key.ToString().Substring(stone.Key.ToString().Length / 2));
+        }
+        else if (stone.Key != 0)
+        {
+            firstStone = stone.Key * 2024;
         }
 
-        if (newStones.TryGetValue(stone.Key, out var value))
+        AddOrUpdateStone(newStones, firstStone, stone.Value);
+        if (secondStone != null)
         {
-            if (value == stone.Value)
-            {
-                newStones.Remove(stone.Key);
-            }
-            else
-            {
-                newStones[stone.Key] = value - stone.Value;
-            }
+            AddOrUpdateStone(newStones, secondStone.Value, stone.Value);
         }
+
+        RemoveOrUpdateStone(newStones, stone.Key, stone.Value);
     }
 
     stones = newStones;
 
-    if (i == 24)
+    if (i == 25)
     {
         Console.WriteLine("Part 1: " + stones.Sum(x => x.Value));
     }
@@ -77,3 +39,30 @@ for (int i = 0; i < 75; i++)
 
 Console.WriteLine("Part 2: " + stones.Sum(x => x.Value));
 Console.ReadKey();
+
+static void AddOrUpdateStone(Dictionary<long, long> stones, long key, long value)
+{
+    if (stones.TryGetValue(key, out long count1))
+    {
+        stones[key] = count1 + value;
+    }
+    else
+    {
+        stones.Add(key, value);
+    }
+}
+
+static void RemoveOrUpdateStone(Dictionary<long, long> stones, long key, long value)
+{
+    if (stones.TryGetValue(key, out var count))
+    {
+        if (count == value)
+        {
+            stones.Remove(key);
+        }
+        else
+        {
+            stones[key] = count - value;
+        }
+    }
+}
