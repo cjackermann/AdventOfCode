@@ -1,10 +1,12 @@
-﻿string input = File.ReadAllText("input.txt");
+﻿using System.Collections.Concurrent;
 
-Dictionary<long, long> stones = input.Split(" ").ToDictionary(long.Parse, x => 1L);
+string input = File.ReadAllText("input.txt");
+
+var stones = new ConcurrentDictionary<long, long>(input.Split(" ").ToDictionary(long.Parse, x => 1L));
 
 for (int i = 1; i <= 75; i++)
 {
-    Dictionary<long, long> newStones = stones.ToDictionary(x => x.Key, x => x.Value);
+    var newStones = new ConcurrentDictionary<long, long>();
     foreach (var stone in stones)
     {
         long stone1 = 1;
@@ -20,13 +22,11 @@ for (int i = 1; i <= 75; i++)
             stone1 = stone.Key * 2024;
         }
 
-        AddOrUpdateStone(newStones, stone1, stone.Value);
+        newStones.AddOrUpdate(stone1, stone.Value, (key, oldValue) => oldValue + stone.Value);
         if (stone2 != null)
         {
-            AddOrUpdateStone(newStones, stone2.Value, stone.Value);
+            newStones.AddOrUpdate(stone2.Value, stone.Value, (key, oldValue) => oldValue + stone.Value);
         }
-
-        RemoveOrUpdateStone(newStones, stone.Key, stone.Value);
     }
 
     stones = newStones;
@@ -39,30 +39,3 @@ for (int i = 1; i <= 75; i++)
 
 Console.WriteLine("Part 2: " + stones.Sum(x => x.Value));
 Console.ReadKey();
-
-static void AddOrUpdateStone(Dictionary<long, long> stones, long key, long value)
-{
-    if (stones.TryGetValue(key, out long count))
-    {
-        stones[key] = count + value;
-    }
-    else
-    {
-        stones.Add(key, value);
-    }
-}
-
-static void RemoveOrUpdateStone(Dictionary<long, long> stones, long key, long value)
-{
-    if (stones.TryGetValue(key, out var count))
-    {
-        if (count == value)
-        {
-            stones.Remove(key);
-        }
-        else
-        {
-            stones[key] = count - value;
-        }
-    }
-}
